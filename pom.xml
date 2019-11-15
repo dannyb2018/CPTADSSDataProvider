@@ -34,5 +34,4 @@ limitations under the License.
         <module>nifi-CPTADSSDataProviderProcessor-processors</module>
         <module>nifi-CPTADSSDataProviderProcessor-nar</module>
     </modules>
-
 </project>
