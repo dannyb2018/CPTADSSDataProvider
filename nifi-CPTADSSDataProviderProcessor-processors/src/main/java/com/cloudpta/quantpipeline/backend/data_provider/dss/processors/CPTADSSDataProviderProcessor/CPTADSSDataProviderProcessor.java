@@ -259,10 +259,6 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     
     protected JsonObject makeRequest(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
     {
-        // get the dss username, password
-        String dssUserName = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
-        String dssPassword = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
-        // Get the datastream username, password
         return null;
     }
     
