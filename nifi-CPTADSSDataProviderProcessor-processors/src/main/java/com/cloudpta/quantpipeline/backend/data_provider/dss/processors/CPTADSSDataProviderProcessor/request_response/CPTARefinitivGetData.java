@@ -20,6 +20,8 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response;
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import javax.json.JsonObject;
 import org.apache.nifi.processor.ProcessContext;
@@ -32,6 +34,26 @@ public class CPTARefinitivGetData
 {
     public static JsonObject getData(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
     {
+        HashMap<String,List<String>> mappedFields = new HashMap<>();
+        // for each type get the fields
+        // Loop through the fields
+        for( CPTADSSField field : fields)
+        {
+            // Get the message type
+            String messageType = field.messageType;
+            // If it is not already in the map
+            List<String> fieldsForThisType = mappedFields.get(messageType);
+            if(null == fieldsForThisType)
+            {
+                // Add it
+                fieldsForThisType = new ArrayList<>();
+                mappedFields.put(messageType, fieldsForThisType);
+            }
+            
+            // Add the field
+            fieldsForThisType.add(field.fieldName);
+        }
+        
         return null;
     }
     
@@ -39,4 +61,6 @@ public class CPTARefinitivGetData
     {
         // So we dont accidentally create this
     }
+    
+    HashMap<String, Class> typeToMessageClassMap = new HashMap<>();
 }
