@@ -72,6 +72,9 @@ public interface CPTADSSDataProviderProcessorConstants
     
     public static final String DATA_RESPONSE_DATE_FORMAT = "yyyy-MM-dd";
     
+    public static final String CPTA_START_DATE_PROPERTY = "start";
+    public static final String CPTA_END_DATE_PROPERTY = "end";
+    public static final String CPTA_FREQUENCY_PROPERTY = "frequency";
     
     public static final String RICS_ARRAY_NAME = "rics";
     public static final String FIELDS_ARRAY_NAME = "fields";
