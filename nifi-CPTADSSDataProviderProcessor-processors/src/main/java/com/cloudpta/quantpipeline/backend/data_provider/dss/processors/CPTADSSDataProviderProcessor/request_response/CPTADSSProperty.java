@@ -25,6 +25,6 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
  */
 public class CPTADSSProperty
 {
-    public String propertryName;
-    public String propertyValue;
+    public String name;
+    public String value;
 }
