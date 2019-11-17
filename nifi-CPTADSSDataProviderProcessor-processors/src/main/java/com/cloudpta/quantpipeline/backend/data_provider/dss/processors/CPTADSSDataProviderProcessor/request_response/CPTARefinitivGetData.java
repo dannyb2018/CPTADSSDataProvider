@@ -23,6 +23,7 @@ import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbolo
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import javax.json.JsonObject;
 import org.apache.nifi.processor.ProcessContext;
 
@@ -51,8 +52,66 @@ public class CPTARefinitivGetData
             }
             
             // Add the field
-            fieldsForThisType.add(field.fieldName);
+            fieldsForThisType.add(field.name);
         }
+        
+        List<JsonObject> responses = new ArrayList<>();
+        Set<String> messagesTypesToQuery = mappedFields.keySet();
+        // Go through the list of message types
+        for(String currentMessageType : messagesTypesToQuery )
+        {
+            // Get fields for the message type
+            List<String> fieldsForThisMessageType = mappedFields.get(currentMessageType);
+            // Try to create an instance of that message
+            try
+            {
+                CPTARefinitivMessage message = getMessageByType(currentMessageType);
+                // For each message pass in the relevant request
+                // Get the data
+                JsonObject response = message.getResult
+                                                      (
+                                                      context, 
+                                                      symbols, 
+                                                      fieldsForThisMessageType,
+                                                      properties
+                                                      );
+                // Add to list of responses
+                responses.add(response);
+            }
+            catch(Exception E)
+            {
+                // Think what to do here
+            }
+        }
+        
+        // Turn reponses into a proper response
+        JsonObject globalResponse = createGlobalResponseFromList(responses);
+        return globalResponse;
+    }
+    
+    protected static CPTARefinitivMessage getMessageByType
+                                                         (
+                                                         String messageType
+                                                         ) throws InstantiationException, IllegalAccessException
+    {
+        // If the mapper is null
+        if( null == typeToMessageClassMap )
+        {
+            // Create it
+            typeToMessageClassMap = new HashMap<>();
+            // populate it
+        }
+
+        // Get class
+        Class messageClassForThisType = typeToMessageClassMap.get(messageType);
+        // Create an instance of it
+        CPTARefinitivMessage messageForThisType = (CPTARefinitivMessage)(messageClassForThisType.newInstance());
+        
+        return messageForThisType;
+    }
+                                                         
+    protected static JsonObject createGlobalResponseFromList(List<JsonObject> responsesFromEachMessage)
+    {
         
         return null;
     }
@@ -62,5 +121,5 @@ public class CPTARefinitivGetData
         // So we dont accidentally create this
     }
     
-    HashMap<String, Class> typeToMessageClassMap = new HashMap<>();
+    static HashMap<String, Class> typeToMessageClassMap = null;
 }
