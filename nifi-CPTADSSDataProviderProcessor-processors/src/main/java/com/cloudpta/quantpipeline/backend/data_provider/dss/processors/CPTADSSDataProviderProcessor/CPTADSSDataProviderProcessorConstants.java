@@ -56,13 +56,19 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_DATA_REQUEST_FIELD = "DataRequest";
     public static final String DSWS_DATA_TYPES_FIELD = "DataTypes";
     public static final String DSWS_DATE_FIELD = "Date";
+    public static final String DSWS_DATES_FIELD = "Dates";
     public static final String DSWS_INSTRUMENT_FIELD = "Instrument";
     public static final String DSWS_TAG_FIELD = "Tag";
     public static final String DSWS_VALUE_FIELD = "Value";
     public static final String DSWS_END_OFFSET_FIELD = "End";
     public static final String DSWS_START_OFFSET_FIELD = "Start";
     public static final String DSWS_KIND_FIELD = "Kind";
-    public static final String DSWS_FREQUEST_FIELD = "Frequency";
+    public static final String DSWS_FREQUENCY_FIELD = "Frequency";
+    public static final String DSWS_DATA_TYPE_VALUES_FIELD = "DataTypeValues";
+    public static final String DSWS_DATA_TYPE_FIELD = "DataType";    
+    public static final String DSWS_SYMBOL_VALUES_FIELD = "SymbolValues";    
+    public static final String DSWS_SYMBOL_FIELD = "Symbol";    
+    public static final String DSWS_TYPE_FIELD = "Type";    
     
     public static final String DATA_RESPONSE_DATE_FORMAT = "yyyy-MM-dd";
     
