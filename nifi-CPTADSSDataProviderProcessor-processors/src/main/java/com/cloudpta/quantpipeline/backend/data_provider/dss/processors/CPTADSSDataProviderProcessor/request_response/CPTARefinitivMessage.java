@@ -22,6 +22,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import java.util.List;
 import javax.json.JsonObject;
+import org.apache.nifi.processor.ProcessContext;
 
 /**
  *
@@ -29,10 +30,11 @@ import javax.json.JsonObject;
  */
 public abstract class CPTARefinitivMessage
 {
-    public CPTARefinitivMessage(List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
-    {
-        
-    }
-    
-    public abstract JsonObject getResult(String userName, String password);
+    public abstract JsonObject getResult
+                                       (
+                                       ProcessContext context,        
+                                       List<CPTAInstrumentSymbology> symbols, 
+                                       List<String> fields, 
+                                       List<CPTADSSProperty> properties
+                                       );
 }
