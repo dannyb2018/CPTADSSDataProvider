@@ -54,8 +54,8 @@ import javax.json.JsonObject;
 import javax.json.JsonReader;
 import org.apache.nifi.logging.ComponentLog;
 
-@Tags({"DSS data provider"})
-@CapabilityDescription("Gets data from DSS")
+@Tags({"DSS and Datastream data provider"})
+@CapabilityDescription("Gets data from DSS and DataStream")
 @SeeAlso({})
 @ReadsAttributes({@ReadsAttribute(attribute="", description="")})
 @WritesAttributes({@WritesAttribute(attribute="", description="")})
