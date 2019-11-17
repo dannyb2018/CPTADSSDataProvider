@@ -210,7 +210,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         //              }
         //          ],
         //          Format of date is from offset from today, to offset from today
-        //          Frequest is interval type and Kind is number of those intervals
+        //          frequecy is interval type and Kind is number of those intervals
         //          Date:
         //          {
         //              End: to_this_date_or_offset,
@@ -321,7 +321,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         // are correct format and values
         
         //          Format of date is from offset from today, to offset from today
-        //          Frequest is interval type and Kind is number of those intervals
+        //          frequency is interval type and Kind is number of those intervals
         //          Date:
         //          {
         //              End: to_this_date_or_offset,
@@ -336,22 +336,22 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         for(CPTADSSProperty currentProperty : properties )
         {
             // If it is frequency
-            if( 0 == currentProperty.name.compareTo(""))
+            if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY))
             {
                 // Add Frequency
-                dateObjectBuilder.add("Frequency", currentProperty.value);
+                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD, currentProperty.value);
             }
             // If it is end offset
-            else if( 0 == currentProperty.name.compareTo(""))
+            else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_END_DATE_PROPERTY))
             {
                 // Add End
-                dateObjectBuilder.add("End", currentProperty.value);
+                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD, currentProperty.value);
             }
             // If it is start offset
-            else if( 0 == currentProperty.name.compareTo(""))
+            else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY))
             {
                 // Add Start
-                dateObjectBuilder.add("Start", currentProperty.value);
+                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD, currentProperty.value);
             }
         }
         
@@ -433,7 +433,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     
     protected List<String> getDataResultDates(JsonObject dataResponseObject)
     {
-        JsonArray dates = dataResponseObject.getJsonArray("Dates");
+        JsonArray dates = dataResponseObject.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATES_FIELD);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
         ArrayList<String> datesAsString = new ArrayList<>();
         
@@ -457,28 +457,28 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     }
     
     protected HashMap<String, List<CPTAFieldValueBlock>> getResultsByRic
-                                                                 (
-                                                                 JsonObject dataResponseObject, 
-                                                                 List<String> dates
-                                                                 )
+                                                                       (
+                                                                       JsonObject dataResponseObject, 
+                                                                       List<String> dates
+                                                                       )
     {
         HashMap<String, List<CPTAFieldValueBlock>> resultsByRic = new HashMap<>();
         // Need to go through the 
-        JsonArray fields = dataResponseObject.getJsonArray("DataTypeValues");
+        JsonArray fields = dataResponseObject.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD);
         // Loop through all the data type values
         for( int i = 0; i < fields.size(); i++)
         {
             // Get the block for this field type
             JsonObject currentFieldBlock = fields.getJsonObject(i);
             // get the field name, this is in DataType in json
-            String fieldName = currentFieldBlock.getString("DataType");
+            String fieldName = currentFieldBlock.getString(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD);
             // Now we loop through all the rics
-            JsonArray valuesForThisFieldByRic = currentFieldBlock.getJsonArray("SymbolValues");
+            JsonArray valuesForThisFieldByRic = currentFieldBlock.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD);
             for( int j = 0; j < valuesForThisFieldByRic.size(); j++ )
             {
                 JsonObject valuesForThisRic = valuesForThisFieldByRic.getJsonObject(j);
                 // Check if it is an error, if it is not
-                int errorCode = valuesForThisRic.getInt("Type");
+                int errorCode = valuesForThisRic.getInt(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD);
                 if( (10 == errorCode) || (12 == errorCode) )
                 {
                     // Get the values
@@ -487,11 +487,11 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     // Set the field name
                     blockForThisRicAndField.fieldName = fieldName;
                     // Set the ric
-                    String ric = valuesForThisRic.getString("Symbol"); 
+                    String ric = valuesForThisRic.getString(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD); 
                     ric = ric.substring(1, ric.length()-1);
                     blockForThisRicAndField.ric = ric;
                     // Loop through each value
-                    JsonArray fieldValues = valuesForThisRic.getJsonArray("Value");
+                    JsonArray fieldValues = valuesForThisRic.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
                     for( int k = 0; k < fieldValues.size(); k++ )
                     {
                         JsonValue currentValue = fieldValues.get(k);
