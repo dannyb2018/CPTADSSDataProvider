@@ -20,10 +20,10 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss;
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSField;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import java.util.List;
 import javax.json.JsonObject;
+import org.apache.nifi.processor.ProcessContext;
 
 /**
  *
@@ -31,15 +31,15 @@ import javax.json.JsonObject;
  */
 public class CPTADSSTimeSeriesMessage extends CPTADSSMessage
 {
-    public CPTADSSTimeSeriesMessage(List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
-    {
-        super(symbols,fields, properties);
-    }
-    
     @Override
-    public JsonObject getResult(String userName, String password)
+    public JsonObject getResult
+                              (
+                              ProcessContext context, 
+                              List<CPTAInstrumentSymbology> symbols, 
+                              List<String> fields, 
+                              List<CPTADSSProperty> properties
+                              )
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
 }
