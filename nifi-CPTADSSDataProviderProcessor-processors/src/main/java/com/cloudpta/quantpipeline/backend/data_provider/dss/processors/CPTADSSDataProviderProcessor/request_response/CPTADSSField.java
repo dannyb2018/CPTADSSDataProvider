@@ -26,5 +26,5 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 public class CPTADSSField
 {
     public String messageType;
-    public String fieldName;
+    public String name;
 }
