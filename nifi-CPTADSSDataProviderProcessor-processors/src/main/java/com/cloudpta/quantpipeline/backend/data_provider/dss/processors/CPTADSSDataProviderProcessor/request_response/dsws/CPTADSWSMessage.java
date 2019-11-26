@@ -332,6 +332,12 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         JsonObjectBuilder dateObjectBuilder = Json.createObjectBuilder();
         // For now kind is always 1
         dateObjectBuilder.add("Kind", 1);
+        
+        // Default is the last day only
+        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
+        
         // Loop through properties
         for(CPTADSSProperty currentProperty : properties )
         {
@@ -428,7 +434,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                                                                 dataResponseObject, 
                                                                                 dates
                                                                                 );
-                
+        // for each new ric, add the rows of data        
     }
     
     protected List<String> getDataResultDates(JsonObject dataResponseObject)
