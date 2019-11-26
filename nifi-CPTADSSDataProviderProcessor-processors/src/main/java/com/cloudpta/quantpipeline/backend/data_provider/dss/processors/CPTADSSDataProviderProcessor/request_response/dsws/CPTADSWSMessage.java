@@ -331,7 +331,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         //          }
         JsonObjectBuilder dateObjectBuilder = Json.createObjectBuilder();
         // For now kind is always 1
-        dateObjectBuilder.add("Kind", 1);
+        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
         
         // Default is the last day only
         dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
