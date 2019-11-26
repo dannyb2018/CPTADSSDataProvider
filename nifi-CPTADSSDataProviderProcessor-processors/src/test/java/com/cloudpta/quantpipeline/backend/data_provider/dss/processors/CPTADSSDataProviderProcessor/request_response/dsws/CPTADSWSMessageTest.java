@@ -233,17 +233,47 @@ public class CPTADSWSMessageTest
     /**
      * Test of getInstrumentObjectBuilder method, of class CPTADSWSMessage.
      */
-/*    @Test
+    @Test
     public void testGetInstrumentObjectBuilder()
     {
         System.out.println("getInstrumentObjectBuilder");
+        
+        // Start with no symbols
+        System.out.println("getInstrumentObjectBuilder no symbols");
         String symbolList = "";
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        JsonObjectBuilder expResult = null;
-        JsonObjectBuilder result = instance.getInstrumentObjectBuilder(symbolList);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        JsonObjectBuilder emptyInstrumentBuilder = instance.getInstrumentObjectBuilder(symbolList);
+        assertNotNull(emptyInstrumentBuilder);
+        JsonObject emptyInstrument = emptyInstrumentBuilder.build();
+        // Get properties
+        JsonValue properties = emptyInstrument.get(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        // Should exist but be null entry 
+        assertNotNull(properties);
+        assertTrue(emptyInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Get instrument list
+        String emptySymboltList = emptyInstrument.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        // should be empty
+        assertNotNull(emptySymboltList);
+        assertTrue(false == emptyInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        assertEquals(emptySymboltList, "");
+
+        // The random string for symbols
+        System.out.println("getInstrumentObjectBuilder random symbols");
+        symbolList = UUID.randomUUID().toString();
+        instance = new CPTADSWSMessage();        
+        JsonObjectBuilder randomInstrumentBuilder = instance.getInstrumentObjectBuilder(symbolList);
+        assertNotNull(randomInstrumentBuilder);
+        JsonObject randomInstrument = randomInstrumentBuilder.build();
+        // Get properties
+        properties = randomInstrument.get(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        // Should exist but be null entry 
+        assertNotNull(properties);
+        assertTrue(randomInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Get instrument list
+        String randomSymbolList = randomInstrument.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        // should be same as the list string passed in
+        assertNotNull(randomSymbolList);
+        assertEquals(randomSymbolList, symbolList);
     }
 
     /**
