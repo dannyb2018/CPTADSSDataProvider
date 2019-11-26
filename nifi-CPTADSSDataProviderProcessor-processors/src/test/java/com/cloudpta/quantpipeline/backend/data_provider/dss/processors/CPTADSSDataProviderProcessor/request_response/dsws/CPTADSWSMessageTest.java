@@ -24,10 +24,12 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValueBlock;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import javax.json.Json;
+import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
@@ -117,17 +119,99 @@ public class CPTADSWSMessageTest
     /**
      * Test of getFieldsArrayBuilder method, of class CPTADSWSMessage.
      */
-/*    @Test
+    @Test
     public void testGetFieldsArrayBuilder()
     {
         System.out.println("getFieldsArrayBuilder");
-        List<String> fields = null;
+        
+        // Start with an empty list
+        System.out.println("getFieldsArrayBuilder empty field list");
+        List<String> inputFields = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        JsonArrayBuilder expResult = null;
-        JsonArrayBuilder result = instance.getFieldsArrayBuilder(fields);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        JsonArrayBuilder emptyFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
+        // Shouldnt be null
+        assertNotNull(emptyFieldsArrayBuilder);
+        // Build the array
+        JsonArray emptyFieldsArray = emptyFieldsArrayBuilder.build();
+        // Should be empty
+        assertEquals(emptyFieldsArray.size(), 0);
+        
+        // Then one field
+        System.out.println("getFieldsArrayBuilder one field list");
+        String field1 = UUID.randomUUID().toString();
+        inputFields.add(field1);
+        instance = new CPTADSWSMessage();
+        JsonArrayBuilder oneFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
+        // Shouldnt be null
+        assertNotNull(oneFieldsArrayBuilder);
+        // Build the array
+        JsonArray oneFieldArray = oneFieldsArrayBuilder.build();
+        // Should be have one field
+        assertEquals(oneFieldArray.size(), 1);
+        // Get that field
+        JsonValue field1Converted = oneFieldArray.get(0);
+        // Should a json object
+        assertEquals(field1Converted.getValueType(), ValueType.OBJECT);
+        // Get the object
+        JsonObject field1ConvertedAsObject = field1Converted.asJsonObject();
+        // Properties should be null
+        assertTrue(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Value should be what we passed in as a field
+        assertFalse(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        String field1Result = field1ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertEquals(field1, field1Result);
+
+        // Then three
+        System.out.println("getFieldsArrayBuilder three field list");
+        String field2 = UUID.randomUUID().toString();
+        inputFields.add(field2);
+        String field3 = UUID.randomUUID().toString();
+        inputFields.add(field3);
+        instance = new CPTADSWSMessage();
+        JsonArrayBuilder threeFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
+        // Shouldnt be null
+        assertNotNull(threeFieldsArrayBuilder);
+        // Build the array
+        JsonArray threeFieldsArray = threeFieldsArrayBuilder.build();
+        // Should be have three fields
+        assertEquals(threeFieldsArray.size(), 3);
+        // Get first field
+        field1Converted = threeFieldsArray.get(0);
+        // Should a json object
+        assertEquals(field1Converted.getValueType(), ValueType.OBJECT);
+        // Get the object
+        field1ConvertedAsObject = field1Converted.asJsonObject();
+        // Properties should be null
+        assertTrue(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Value should be what we passed in as a field
+        assertFalse(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        field1Result = field1ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertEquals(field1, field1Result);
+        // Get second field
+        JsonValue field2Converted = threeFieldsArray.get(1);
+        // Should a json object
+        assertEquals(field2Converted.getValueType(), ValueType.OBJECT);
+        // Get the object
+        JsonObject field2ConvertedAsObject = field2Converted.asJsonObject();
+        // Properties should be null
+        assertTrue(field2ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Value should be what we passed in as a field
+        assertFalse(field2ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        String field2Result = field2ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertEquals(field2, field2Result);
+        // Get third field
+        JsonValue field3Converted = threeFieldsArray.get(2);
+        // Should a json object
+        assertEquals(field3Converted.getValueType(), ValueType.OBJECT);
+        // Get the object
+        JsonObject field3ConvertedAsObject = field3Converted.asJsonObject();
+        // Properties should be null
+        assertTrue(field3ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // Value should be what we passed in as a field
+        assertFalse(field3ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        String field3Result = field3ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertEquals(field3, field3Result);
+        
     }
 
     /**
