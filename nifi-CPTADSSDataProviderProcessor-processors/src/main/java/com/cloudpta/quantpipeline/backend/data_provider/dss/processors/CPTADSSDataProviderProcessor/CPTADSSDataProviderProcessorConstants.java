@@ -75,6 +75,12 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String CPTA_START_DATE_PROPERTY = "start";
     public static final String CPTA_END_DATE_PROPERTY = "end";
     public static final String CPTA_FREQUENCY_PROPERTY = "frequency";
+    public static final String DSWS_START_DATE_PROPERTY_DEFAULT = "-1D";
+    public static final String DSWS_END_DATE_PROPERTY_DEFAULT = "-0D";
+    public static final String DSWS_FREQUENCY_PROPERTY_DEFAULT = "D";
+    public static final String DSWS_FREQUENCY_PROPERTY_DAILY = "D";
+    public static final String DSWS_FREQUENCY_PROPERTY_WEEKLY = "W";
+    public static final String DSWS_FREQUENCY_PROPERTY_MONTHLY = "M";
     
     public static final String RICS_ARRAY_NAME = "rics";
     public static final String FIELDS_ARRAY_NAME = "fields";
