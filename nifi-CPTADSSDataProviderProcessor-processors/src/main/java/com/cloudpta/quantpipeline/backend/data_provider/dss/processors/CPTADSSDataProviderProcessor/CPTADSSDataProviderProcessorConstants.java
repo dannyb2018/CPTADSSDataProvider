@@ -49,6 +49,7 @@ public interface CPTADSSDataProviderProcessorConstants
     
     public static final String DSWS_GET_TOKEN = "/GetToken";
     public static final String DSWS_GET_DATA = "/GetData";
+    
     public static final String DSWS_TOKEN_VALUE_FIELD = "TokenValue";
     public static final String DSWS_USER_NAME_FIELD = "UserName";
     public static final String DSWS_PASSSWORD_FIELD = "Password";
@@ -63,6 +64,7 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_END_OFFSET_FIELD = "End";
     public static final String DSWS_START_OFFSET_FIELD = "Start";
     public static final String DSWS_KIND_FIELD = "Kind";
+    public static final int DSWS_KIND_FIELD_DEFAULT = 1;
     public static final String DSWS_FREQUENCY_FIELD = "Frequency";
     public static final String DSWS_DATA_TYPE_VALUES_FIELD = "DataTypeValues";
     public static final String DSWS_DATA_TYPE_FIELD = "DataType";    
