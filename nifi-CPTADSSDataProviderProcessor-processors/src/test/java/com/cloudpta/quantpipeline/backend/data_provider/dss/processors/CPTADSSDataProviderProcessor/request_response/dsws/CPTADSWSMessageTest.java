@@ -24,7 +24,9 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValueBlock;
 import java.io.StringReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -255,10 +257,161 @@ public class CPTADSWSMessageTest
         String frequencyAsString = defaultDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
         assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
 
-        // day before
+        // 2 days before
+        properties = new ArrayList<>();
+        CPTADSSProperty newStartDateProperty = new CPTADSSProperty();
+        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty.value = "-1D";
+        properties.add(newStartDateProperty);
+        instance = new CPTADSWSMessage();        
+        JsonObjectBuilder oneDayBeforeDateBuilder = instance.getDateObjectBuilder(properties);
+        // Then have today and 1 day before hand
+        assertNotNull(oneDayBeforeDateBuilder);
+        JsonObject oneDayBeforeDateObject = oneDayBeforeDateBuilder.build();
+        assertNotNull(oneDayBeforeDateObject);
+        // Kind always 1
+        kind = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertNotNull(kind);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
+        kindValue = oneDayBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        // End date check
+        endDateOffset = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertNotNull(endDateOffset);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
+        endDateAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        // start date check
+        startDateOffset = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertNotNull(startDateOffset);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
+        startDateAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertEquals(startDateAsString, newStartDateProperty.value);
+        // Frequency check
+        frequency = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertNotNull(frequency);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
+        frequencyAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+
         // A week beforehand
-        // 2 weeks beforehand
-        // 1 months beforehand
+        properties = new ArrayList<>();
+        newStartDateProperty = new CPTADSSProperty();
+        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty.value = "-1W";
+        properties.add(newStartDateProperty);
+        instance = new CPTADSWSMessage();        
+        JsonObjectBuilder oneWeekBeforeDateBuilder = instance.getDateObjectBuilder(properties);
+        // Then have today and 1 day before hand
+        assertNotNull(oneWeekBeforeDateBuilder);
+        JsonObject oneWeekBeforeDateObject = oneWeekBeforeDateBuilder.build();
+        assertNotNull(oneWeekBeforeDateObject);
+        // Kind always 1
+        kind = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertNotNull(kind);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
+        kindValue = oneWeekBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        // End date check
+        endDateOffset = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertNotNull(endDateOffset);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
+        endDateAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        // start date check
+        startDateOffset = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertNotNull(startDateOffset);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
+        startDateAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertEquals(startDateAsString, newStartDateProperty.value);
+        // Frequency check
+        frequency = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertNotNull(frequency);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
+        frequencyAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        
+        // 1 month by weeks beforehand
+        properties = new ArrayList<>();
+        newStartDateProperty = new CPTADSSProperty();
+        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty.value = "-1M";
+        properties.add(newStartDateProperty);
+        CPTADSSProperty newFrequencyProperty = new CPTADSSProperty();
+        newFrequencyProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY;
+        newFrequencyProperty.value = "W";
+        properties.add(newFrequencyProperty);
+        instance = new CPTADSWSMessage();        
+        JsonObjectBuilder oneMonthBeforeDateBuilder = instance.getDateObjectBuilder(properties);
+        // Then have today and 1 day before hand
+        assertNotNull(oneMonthBeforeDateBuilder);
+        JsonObject oneMonthBeforeDateObject = oneMonthBeforeDateBuilder.build();
+        assertNotNull(oneMonthBeforeDateObject);
+        // Kind always 1
+        kind = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertNotNull(kind);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
+        kindValue = oneMonthBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        // End date check
+        endDateOffset = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertNotNull(endDateOffset);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
+        endDateAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        // start date check
+        startDateOffset = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertNotNull(startDateOffset);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
+        startDateAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertEquals(startDateAsString, newStartDateProperty.value);
+        // Frequency check
+        frequency = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertNotNull(frequency);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
+        frequencyAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, newFrequencyProperty.value);
+        
+        // 1 year by months beforehand
+        properties = new ArrayList<>();
+        newStartDateProperty = new CPTADSSProperty();
+        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty.value = "-1Y";
+        properties.add(newStartDateProperty);
+        newFrequencyProperty = new CPTADSSProperty();
+        newFrequencyProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY;
+        newFrequencyProperty.value = "M";
+        properties.add(newFrequencyProperty);
+        instance = new CPTADSWSMessage();        
+        JsonObjectBuilder oneYearBeforeDateBuilder = instance.getDateObjectBuilder(properties);
+        // Then have today and 1 day before hand
+        assertNotNull(oneYearBeforeDateBuilder);
+        JsonObject oneYearBeforeDateObject = oneYearBeforeDateBuilder.build();
+        assertNotNull(oneYearBeforeDateObject);
+        // Kind always 1
+        kind = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertNotNull(kind);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
+        kindValue = oneYearBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        // End date check
+        endDateOffset = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertNotNull(endDateOffset);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
+        endDateAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        // start date check
+        startDateOffset = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertNotNull(startDateOffset);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
+        startDateAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertEquals(startDateAsString, newStartDateProperty.value);
+        // Frequency check
+        frequency = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertNotNull(frequency);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
+        frequencyAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, newFrequencyProperty.value);
         
     }
 
@@ -326,17 +479,45 @@ public class CPTADSWSMessageTest
     /**
      * Test of getDataResultDates method, of class CPTADSWSMessage.
      */
-/*    @Test
+    @Test
     public void testGetDataResultDates()
     {
+        // DS date format is \/Date(time_in_millis+0000)\/
+        // \/Date(1574985600000+0000)\/
         System.out.println("getDataResultDates");
-        JsonObject dataResponseObject = null;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        
+        // Build basic response
+        JsonArrayBuilder jsonDateArray = Json.createArrayBuilder();
+        JsonObjectBuilder jsonDataResponse = Json.createObjectBuilder();
+        jsonDataResponse.add("Dates", jsonDateArray);
+        
+        JsonObject dataResponseObject = jsonDataResponse.build();        
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        List<String> expResult = null;
-        List<String> result = instance.getDataResultDates(dataResponseObject);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+
+        // Pass in a result with no dates
+        List<String> emptyDateResult = instance.getDataResultDates(dataResponseObject);
+        // Should be an empty array
+        assertNotNull(emptyDateResult);
+        assertEquals(emptyDateResult.size(), 0);
+        
+        // Pass a result in with 1 date
+        // This will be now
+        Calendar now = Calendar.getInstance();
+        // Turn into milliseconds
+        long nowAsMilliseconds = now.getTimeInMillis();
+        String nowAsDSWSDate = "\\/Date(" + Long.toString(nowAsMilliseconds) + "+0000)\\/";
+        jsonDateArray.add(nowAsDSWSDate);
+        jsonDataResponse.add("Dates", jsonDateArray);
+        dataResponseObject = jsonDataResponse.build();
+        List<String> oneDateResult = instance.getDataResultDates(dataResponseObject);
+        // Should be an empty array
+        assertNotNull(oneDateResult);
+        assertEquals(oneDateResult.size(), 1);
+        String expectedResult = simpleDateFormat.format(now.getTime());
+        assertEquals(oneDateResult.get(0), expectedResult);
+        // Pass in a result with 10 dates
     }
 
     /**
