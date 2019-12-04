@@ -448,7 +448,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         {
             String millisecondsAsString = dates.getString(i);
             // Strip away everything apart from the milliseconds
-            millisecondsAsString = millisecondsAsString.substring(6,19);
+            millisecondsAsString = millisecondsAsString.substring(7,20);
             long dateAsLong = Long.parseLong(millisecondsAsString);
             // Convert it into a date
             Calendar date = Calendar.getInstance();
