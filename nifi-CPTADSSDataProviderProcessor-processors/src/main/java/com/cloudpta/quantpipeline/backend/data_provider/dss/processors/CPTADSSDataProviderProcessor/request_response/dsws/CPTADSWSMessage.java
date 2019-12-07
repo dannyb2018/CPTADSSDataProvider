@@ -22,7 +22,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValueBlock;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -429,7 +429,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
 
         // In parsing, we should have an array of field blocks
         // mapped by ric
-        HashMap<String, List<CPTAFieldValueBlock>> resultsByRic = getResultsByRic
+        HashMap<String, List<CPTAFieldValue>> resultsByRic = getResultsByRic
                                                                                 (
                                                                                 dataResponseObject, 
                                                                                 dates
@@ -462,13 +462,13 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return datesAsString;
     }
     
-    protected HashMap<String, List<CPTAFieldValueBlock>> getResultsByRic
-                                                                       (
-                                                                       JsonObject dataResponseObject, 
-                                                                       List<String> dates
-                                                                       )
+    protected HashMap<String, List<CPTAFieldValue>> getResultsByRic
+                                                                  (
+                                                                  JsonObject dataResponseObject, 
+                                                                  List<String> dates
+                                                                  )
     {
-        HashMap<String, List<CPTAFieldValueBlock>> resultsByRic = new HashMap<>();
+        HashMap<String, List<CPTAFieldValue>> resultsByRic = new HashMap<>();        
         // Need to go through the 
         JsonArray fields = dataResponseObject.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD);
         // Loop through all the data type values
@@ -487,15 +487,24 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                 int errorCode = valuesForThisRic.getInt(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD);
                 if( (10 == errorCode) || (12 == errorCode) )
                 {
-                    // Get the values
-                    // This is a new block
-                    CPTAFieldValueBlock blockForThisRicAndField = new CPTAFieldValueBlock();
-                    // Set the field name
-                    blockForThisRicAndField.fieldName = fieldName;
                     // Set the ric
                     String ric = valuesForThisRic.getString(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD); 
                     ric = ric.substring(1, ric.length()-1);
-                    blockForThisRicAndField.ric = ric;
+                    // If there was not an entry for this ric
+                    List<CPTAFieldValue> fieldValuesForThisRic = resultsByRic.get(ric);
+                    if( null == fieldValuesForThisRic )
+                    {
+                        // add it
+                        fieldValuesForThisRic = new ArrayList<>();
+                        resultsByRic.put(ric, fieldValuesForThisRic);
+                    }
+                    
+                    // Get the values
+                    // This is a new value
+                    CPTAFieldValue valueForThisRicAndField = new CPTAFieldValue();
+                    // Set the field name
+                    valueForThisRicAndField.name = fieldName;
+
                     // Loop through each value
                     JsonArray fieldValues = valuesForThisRic.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
                     for( int k = 0; k < fieldValues.size(); k++ )
@@ -504,24 +513,21 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                         // If the value is not null
                         if( 0 != currentValue.getValueType().compareTo(JsonValue.ValueType.NULL))
                         {
-                            // add a value
-                            String valueAsString = fieldValues.getJsonNumber(k).toString();
-                            blockForThisRicAndField.values.add(valueAsString);
-                            // add a date
-                            blockForThisRicAndField.valueDates.add(dates.get(k));
+                            // If it is a number
+                            if(0 == currentValue.getValueType().compareTo(JsonValue.ValueType.NUMBER))
+                            {
+                                // add a value
+                                valueForThisRicAndField.value = fieldValues.getJsonNumber(k).toString();
+                            }
+                            else
+                            {
+                                valueForThisRicAndField.value = fieldValues.getString(k);                                
+                            }
+                            // set a date                            
+                            valueForThisRicAndField.date = dates.get(k);
+                            fieldValuesForThisRic.add(valueForThisRicAndField);                            
                         }
-                    }
-                    
-                    // If there was not an entry for this ric
-                    List<CPTAFieldValueBlock> blocksForThisRic = resultsByRic.get(ric);
-                    if( null == blocksForThisRic )
-                    {
-                        // add it
-                        blocksForThisRic = new ArrayList<>();
-                        resultsByRic.put(ric, blocksForThisRic);
-                    }
-                    // Add this entry for the ric and field
-                    blocksForThisRic.add(blockForThisRicAndField);
+                    }                    
                 }
             }
         }
