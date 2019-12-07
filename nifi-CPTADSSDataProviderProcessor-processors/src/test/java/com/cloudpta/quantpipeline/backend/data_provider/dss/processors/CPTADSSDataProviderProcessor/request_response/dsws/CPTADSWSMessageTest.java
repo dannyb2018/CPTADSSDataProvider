@@ -19,10 +19,9 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
-import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValueBlock;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
-import org.apache.nifi.processor.ProcessContext;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -187,24 +185,6 @@ public class CPTADSWSMessageTest
         assertEquals(startDate, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
         String frequency = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
         assertEquals(frequency, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
-    }
-
-    /**
-     * Test of getDataRequestObject method, of class CPTADSWSMessage.
-     */
-/*    @Test
-    public void testGetDataRequestObject()
-    {
-        System.out.println("getDataRequestObject");
-        String symbolList = "";
-        List<String> fields = null;
-        List<CPTADSSProperty> properties = null;
-        CPTADSWSMessage instance = new CPTADSWSMessage();
-        JsonObjectBuilder expResult = null;
-        JsonObjectBuilder result = instance.getDataRequestObject(symbolList, fields, properties);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
     }
 
     /**
@@ -612,19 +592,315 @@ public class CPTADSWSMessageTest
     /**
      * Test of getResultsByRic method, of class CPTADSWSMessage.
      */
-/*    @Test
+    @Test
     public void testGetResultsByRic()
     {
         
         System.out.println("getResultsByRic");
-        JsonObject dataResponseObject = null;
-        List<String> dates = null;
+
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        String nowDate = simpleDateFormat.format(now.getTime());
+        
+        // Start by handling a empty result
+        JsonObjectBuilder dataResponseObjectBuilder = Json.createObjectBuilder();
+        JsonArrayBuilder dataTypeValuesBuilder = Json.createArrayBuilder();   
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        JsonObject dataResponseObject = dataResponseObjectBuilder.build();
+        List<String> dates = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        HashMap<String, List<CPTAFieldValueBlock>> expResult = null;
-        HashMap<String, List<CPTAFieldValueBlock>> result = instance.getResultsByRic(dataResponseObject, dates);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        HashMap<String, List<CPTAFieldValue>> result = instance.getResultsByRic(dataResponseObject, dates);
+        // Result should be empty        
+        assertTrue(result.isEmpty());
+
+        // The date is just one, today
+        dates = new ArrayList<>();
+        dates.add(nowDate);
+
+        // handle a result with one ric
+        String field1 = UUID.randomUUID().toString();
+        String ric1 = UUID.randomUUID().toString();
+        double field1Ric1Value1 = Math.random();
+        // build the symbol values
+        JsonObjectBuilder ric1SymbolValueBuilder = Json.createObjectBuilder();
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        JsonArrayBuilder ric1Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field1ValuesBuilder.add(field1Ric1Value1);
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        JsonArrayBuilder field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        JsonObjectBuilder field1ResponseBuilder = Json.createObjectBuilder();
+        // This is the field
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        // Add this to the list of field responses
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        instance = new CPTADSWSMessage();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        // Cant be empty
+        assertTrue(false == result.isEmpty());
+        List<CPTAFieldValue> ric1Result = result.get(ric1);
+        assertNotNull(ric1Result);
+        // Should be just one block
+        assertEquals(ric1Result.size(), 1);
+        CPTAFieldValue resultBlock11 = ric1Result.get(0);
+        assertEquals(resultBlock11.name, field1);
+        assertEquals(resultBlock11.date, nowDate);
+        assertEquals(resultBlock11.value, Double.toString(field1Ric1Value1));
+        
+        // handle a result with one ric that has a datapoint and one ric that has an error
+        String ric2 = UUID.randomUUID().toString();
+        // build the symbol values for second ric
+        JsonObjectBuilder ric2SymbolValueBuilder = Json.createObjectBuilder();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        // The symbols are ric codes within brackets
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        JsonArrayBuilder ric2Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field1ValuesBuilder.addNull();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        JsonArrayBuilder field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
+        field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1ResponseBuilder = Json.createObjectBuilder();
+        // This is the first ric
+        ric1SymbolValueBuilder = Json.createObjectBuilder();
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field1ValuesBuilder.add(field1Ric1Value1);
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        // Now add the field response
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        // Add this to the list of field responses
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        // Cant be empty
+        assertTrue(false == result.isEmpty());
+        ric1Result = result.get(ric1);
+        assertNotNull(ric1Result);
+        // Should be just one block
+        assertEquals(ric1Result.size(), 1);
+        resultBlock11 = ric1Result.get(0);
+        assertEquals(resultBlock11.name, field1);
+        assertEquals(resultBlock11.date, nowDate);
+        assertEquals(resultBlock11.value, Double.toString(field1Ric1Value1));
+        
+        // handle result with one ric with an error
+        // build the symbol values for second ric
+        ric2SymbolValueBuilder = Json.createObjectBuilder();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        // The symbols are ric codes within brackets
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field1ValuesBuilder.addNull();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
+        field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        // Now add the field response
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        // Add this to the list of field responses
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        // Should be empty
+        assertTrue(result.isEmpty());
+        
+        // handle two rics with an error
+        // build the symbol values for second ric
+        ric2SymbolValueBuilder = Json.createObjectBuilder();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        // The symbols are ric codes within brackets
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field1ValuesBuilder.addNull();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
+        field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1ResponseBuilder = Json.createObjectBuilder();
+        // This is the first ric
+        ric1SymbolValueBuilder = Json.createObjectBuilder();
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        // The symbols are ric codes within brackets
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field1ValuesBuilder.addNull();
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        // Now add the field response
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        // Add this to the list of field responses
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        assertTrue(result.isEmpty());
+        
+        // handle two rics with a datapoint
+        double field1Ric2Value1 = Math.random();
+        // build the symbol values for second ric
+        ric2SymbolValueBuilder = Json.createObjectBuilder();
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field1ValuesBuilder.add(field1Ric2Value1);
+        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
+        field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1ResponseBuilder = Json.createObjectBuilder();
+        // This is the first ric
+        ric1SymbolValueBuilder = Json.createObjectBuilder();
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field1ValuesBuilder.add(field1Ric1Value1);
+        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
+        field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        // Now add the field response
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        // Add this to the list of field responses
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        assertTrue(false == result.isEmpty());
+        // Should have two rics
+        assertEquals(result.keySet().size(), 2);
+        // Get first ric
+        List<CPTAFieldValue> ric1Values = result.get(ric1);
+        assertNotNull(ric1Values);
+        // Only one value
+        assertEquals(ric1Values.size(),1);
+        // should be the set one with the set date
+        assertEquals(ric1Values.get(0).name, field1);
+        assertEquals(ric1Values.get(0).date, nowDate);
+        assertEquals(ric1Values.get(0).value, Double.toString(field1Ric1Value1));
+
+        // Get second ric
+        List<CPTAFieldValue> ric2Values = result.get(ric2);
+        assertNotNull(ric2Values);
+        // Only one value
+        assertEquals(ric2Values.size(),1);
+        // should be the set one with the set date
+        assertEquals(ric2Values.get(0).name, field1);
+        assertEquals(ric2Values.get(0).date, nowDate);
+        assertEquals(ric2Values.get(0).value, Double.toString(field1Ric2Value1));
+
+        // handle two rics with two datapoints
+        String field2 = UUID.randomUUID().toString();
+        double field2Ric1Value1 = Math.random();
+        double field2Ric2Value1 = Math.random();
+        // Start with first field
+        // build the symbol values for second ric
+        JsonObjectBuilder field1Ric2SymbolValueBuilder = Json.createObjectBuilder();
+        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field1ValuesBuilder.add(field1Ric2Value1);
+        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        // This is the first ric
+        JsonObjectBuilder field1Ric1SymbolValueBuilder = Json.createObjectBuilder();
+        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1Field1ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field1ValuesBuilder.add(field1Ric1Value1);
+        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        // add both values for field1
+        field1SymbolValuesBuilder = Json.createArrayBuilder();
+        field1SymbolValuesBuilder.add(field1Ric1SymbolValueBuilder);
+        field1SymbolValuesBuilder.add(field1Ric2SymbolValueBuilder);
+        // Now add the field response
+        field1ResponseBuilder = Json.createObjectBuilder();
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        // Now do same for second field
+        // build the symbol values for second ric
+        JsonObjectBuilder field2Ric2SymbolValueBuilder = Json.createObjectBuilder();
+        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        JsonArrayBuilder ric2Field2ValuesBuilder = Json.createArrayBuilder();   
+        ric2Field2ValuesBuilder.add(field2Ric2Value1);
+        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field2ValuesBuilder);
+        // This is the first ric
+        JsonObjectBuilder field2Ric1SymbolValueBuilder = Json.createObjectBuilder();
+        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        // The symbols are ric codes within brackets
+        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        JsonArrayBuilder ric1Field2ValuesBuilder = Json.createArrayBuilder();   
+        ric1Field2ValuesBuilder.add(field2Ric1Value1);
+        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field2ValuesBuilder);
+        JsonArrayBuilder field2SymbolValuesBuilder = Json.createArrayBuilder();
+        field2SymbolValuesBuilder.add(field2Ric1SymbolValueBuilder);
+        field2SymbolValuesBuilder.add(field2Ric2SymbolValueBuilder);
+        // Now add the field response
+        JsonObjectBuilder field2ResponseBuilder = Json.createObjectBuilder();
+        field2ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field2);
+        field2ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field2SymbolValuesBuilder);
+        // Add this to the list of field responses
+        dataTypeValuesBuilder = Json.createArrayBuilder();   
+        dataTypeValuesBuilder.add(field1ResponseBuilder);
+        dataTypeValuesBuilder.add(field2ResponseBuilder);
+        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObject = dataResponseObjectBuilder.build();
+        result = instance.getResultsByRic(dataResponseObject, dates);
+        // Shouldnt be empty
+        assertTrue(false == result.isEmpty());
+        // Should have two rics
+        assertEquals(result.keySet().size(),2);
+        // Get result for first ric
+        ric1Values = result.get(ric1);
+        // should have two fields
+        assertEquals(ric1Values.size(),2);
+        assertEquals(ric1Values.get(0).name, field1);
+        assertEquals(ric1Values.get(0).date, nowDate);
+        assertEquals(ric1Values.get(0).value, Double.toString(field1Ric1Value1));
+        assertEquals(ric1Values.get(1).name, field2);
+        assertEquals(ric1Values.get(1).date, nowDate);
+        assertEquals(ric1Values.get(1).value, Double.toString(field2Ric1Value1));
+        // Get result for second ric
+        ric2Values = result.get(ric2);
+        // should have two fields
+        assertEquals(ric2Values.size(),2);
+        assertEquals(ric2Values.get(0).name, field1);
+        assertEquals(ric2Values.get(0).date, nowDate);
+        assertEquals(ric2Values.get(0).value, Double.toString(field1Ric2Value1));
+        assertEquals(ric2Values.get(1).name, field2);
+        assertEquals(ric2Values.get(1).date, nowDate);
+        assertEquals(ric2Values.get(1).value, Double.toString(field2Ric2Value1));
     }
 
     /**
