@@ -84,20 +84,109 @@ public class CPTADSWSMessageTest
     /**
      * Test of buildDataRequest method, of class CPTADSWSMessage.
      */
-/*    @Test
+    @Test
     public void testBuildDataRequest()
     {
         System.out.println("buildDataRequest");
-        String authorisationToken = "";
-        String symbolList = "";
-        List<String> fields = null;
-        List<CPTADSSProperty> properties = null;
+        /* going to build this request
+        {
+            "DataRequest": 
+            {
+                "DataTypes": 
+                [
+                    {
+                        "Properties": null,
+                        "Value": a_random_string
+                    }
+                ],
+                "Date": 
+                {
+                    "End": "-0D",
+                    "Frequency": "D",
+                    "Kind": 1,
+                    "Start": "-0D"
+                },
+                "Instrument": 
+                {
+                    "Properties": null,
+                    "Value": "<a_random_string>,<another_random_string>"
+                },
+                "Tag": null
+            },
+            "Properties": null,
+            "TokenValue": a_random_string
+        }
+        */
+        // token is random
+        String authorisationToken = UUID.randomUUID().toString();
+        // List is two random symbols
+        String symbolList = "<" + UUID.randomUUID().toString() + ">,<" + UUID.randomUUID().toString() + ">";
+        List<String> fields = new ArrayList<>();
+        // field is one random field
+        String field = UUID.randomUUID().toString();
+        fields.add(field);
+        // default properties
+        List<CPTADSSProperty> properties = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        String expResult = "";
+        // Get the result
         String result = instance.buildDataRequest(authorisationToken, symbolList, fields, properties);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        assertNotNull(result);
+        // Parse it
+        JsonObject parsedRequest = Json.createReader(new StringReader(result)).readObject();
+        assertNotNull(parsedRequest);
+
+        // lets check properties are null
+        assertTrue(parsedRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // lets check token isnt null and token is what we passed in        
+        assertTrue(false == parsedRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD));
+        String tokenValue = parsedRequest.getString(CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD);
+        assertNotNull(tokenValue);
+        assertEquals(tokenValue,authorisationToken);
+        
+        // next with data request object
+        JsonObject dataRequest = parsedRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_DATA_REQUEST_FIELD);
+        assertNotNull(dataRequest);
+        
+        // Tag should always be null
+        assertTrue(dataRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_TAG_FIELD));
+        // Get datatypes
+        JsonArray dataTypes = dataRequest.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPES_FIELD);
+        assertNotNull(dataTypes);
+        // Has one object
+        assertEquals(dataTypes.size(),1);
+        JsonObject theDataType = dataTypes.getJsonObject(0);
+        assertNotNull(theDataType);
+        // properties of the object are null
+        assertTrue(theDataType.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        // value is equal to the field we put in
+        assertTrue(false == theDataType.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        String value = theDataType.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertEquals(field, value);
+        
+        // Next get instrument
+        JsonObject instrumentObject = dataRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_INSTRUMENT_FIELD);
+        assertNotNull(instrumentObject);
+        // The list should be what we passed in
+        value = instrumentObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertNotNull(value);
+        assertEquals(symbolList, value);
+        // The properties should be null
+        assertTrue(instrumentObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        
+        // Finally check date properties
+        JsonObject dateProperties = dataRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_DATE_FIELD);
+        assertNotNull(dateProperties);
+        // Kind is always one
+        int kind = dateProperties.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        assertEquals(kind, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        // it is an EOD request by default
+        // So end date is now and start date is now and frequency is day
+        String endDate = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        assertEquals(endDate, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        String startDate = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertEquals(startDate, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
+        String frequency = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertEquals(frequency, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
     }
 
     /**
@@ -526,6 +615,7 @@ public class CPTADSWSMessageTest
 /*    @Test
     public void testGetResultsByRic()
     {
+        
         System.out.println("getResultsByRic");
         JsonObject dataResponseObject = null;
         List<String> dates = null;
