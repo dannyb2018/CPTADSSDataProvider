@@ -28,8 +28,10 @@ import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
@@ -385,7 +387,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return instrumentObjectBuilder;
     }
     
-    protected void mergeDSWSResponseWithCPTAFormat(JsonObject newDSWSData, JsonObjectBuilder existingDSWSDataInCPTAFormat)
+    protected void mergeDSWSResponseWithCPTAFormat(JsonObject newDSWSData, JsonObjectBuilder existingDataInCPTAFormat)
     {
         // Response looks like
         // {
@@ -423,18 +425,57 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         // Get dates array
         List<String> dates = getDataResultDates(dataResponseObject);
         
-        // Need error list for rics, this is the rics where there is some error
-        // Or no data
-        List<String> errorRics = new ArrayList<>();
-
         // In parsing, we should have an array of field blocks
         // mapped by ric
         HashMap<String, List<CPTAFieldValue>> resultsByRic = getResultsByRic
-                                                                                (
-                                                                                dataResponseObject, 
-                                                                                dates
-                                                                                );
-        // for each new ric, add the rows of data        
+                                                                           (
+                                                                           dataResponseObject, 
+                                                                           dates
+                                                                           );
+        addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
+    }
+    
+    protected void addDSWSRowsToExistingResult
+                                             (
+                                             HashMap<String, List<CPTAFieldValue>> resultsByRic, 
+                                             JsonObjectBuilder existingDataInCPTAFormat
+                                             )
+    {
+        // for each ric, we add a row of data for each date
+        Set<String> ricsWithResults = resultsByRic.keySet();
+        for( String currentRic: ricsWithResults)
+        {
+            // For each date there is going to be a json object with all the
+            // data for that ric on that date
+            HashMap<String, JsonObjectBuilder> rowsForThisRic = new HashMap<>();
+            List<CPTAFieldValue> valuesForThisRic = resultsByRic.get(currentRic);
+            for(CPTAFieldValue currentValue : valuesForThisRic)
+            {
+                // Get the row for this date                
+                JsonObjectBuilder rowForThisDate = rowsForThisRic.get(currentValue.date);
+                // If this is the first date
+                if( null == rowForThisDate )
+                {
+                    // Create a row
+                    rowForThisDate = Json.createObjectBuilder();
+                    // Add the ric
+                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.RIC_FIELD_NAME, currentRic);
+                    // Add the date
+                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME, currentRic);
+                    // Add to rows
+                    rowsForThisRic.put(currentValue.date, rowForThisDate);
+                }
+                // Add the field name and its value
+                rowForThisDate.add(currentValue.name, currentValue.value);
+            }
+            
+            // add the rows to the result
+            Collection<JsonObjectBuilder> rowsToAdd = rowsForThisRic.values();
+            for(JsonObjectBuilder currentRow : rowsToAdd)
+            {
+                existingDataInCPTAFormat.addAll(currentRow);
+            }
+        }        
     }
     
     protected List<String> getDataResultDates(JsonObject dataResponseObject)
