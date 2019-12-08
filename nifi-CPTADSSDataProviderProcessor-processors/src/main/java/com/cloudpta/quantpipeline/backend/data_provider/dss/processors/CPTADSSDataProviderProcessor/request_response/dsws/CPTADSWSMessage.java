@@ -65,7 +65,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         String password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY).getValue();
         String baseURL = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_BASE_URL_PROPERTY).getValue();
 
-        JsonObjectBuilder cptaDataResponse  = Json.createObjectBuilder();
+        JsonArrayBuilder cptaDataResponse  = Json.createArrayBuilder();
         
         // Can only do 50 rics at a time
         // So need to keep count of how many we have done already
@@ -106,7 +106,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         }
 
         // convert to a json object
-        JsonObject cptaResponseAsJson = cptaDataResponse.build();
+        JsonObject cptaResponseAsJson = cptaDataResponse.build().asJsonObject();
         return cptaResponseAsJson;
     }
     
@@ -387,7 +387,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return instrumentObjectBuilder;
     }
     
-    protected void mergeDSWSResponseWithCPTAFormat(JsonObject newDSWSData, JsonObjectBuilder existingDataInCPTAFormat)
+    protected void mergeDSWSResponseWithCPTAFormat(JsonObject newDSWSData, JsonArrayBuilder existingDataInCPTAFormat)
     {
         // Response looks like
         // {
@@ -438,7 +438,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     protected void addDSWSRowsToExistingResult
                                              (
                                              HashMap<String, List<CPTAFieldValue>> resultsByRic, 
-                                             JsonObjectBuilder existingDataInCPTAFormat
+                                             JsonArrayBuilder existingDataInCPTAFormat
                                              )
     {
         // for each ric, we add a row of data for each date
@@ -461,7 +461,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     // Add the ric
                     rowForThisDate.add(CPTADSSDataProviderProcessorConstants.RIC_FIELD_NAME, currentRic);
                     // Add the date
-                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME, currentRic);
+                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME, currentValue.date);
                     // Add to rows
                     rowsForThisRic.put(currentValue.date, rowForThisDate);
                 }
@@ -473,7 +473,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
             Collection<JsonObjectBuilder> rowsToAdd = rowsForThisRic.values();
             for(JsonObjectBuilder currentRow : rowsToAdd)
             {
-                existingDataInCPTAFormat.addAll(currentRow);
+                existingDataInCPTAFormat.add(0, currentRow);
             }
         }        
     }
@@ -489,7 +489,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         {
             String millisecondsAsString = dates.getString(i);
             // Strip away everything apart from the milliseconds
-            millisecondsAsString = millisecondsAsString.substring(7,20);
+            millisecondsAsString = millisecondsAsString.substring(6,19);
             long dateAsLong = Long.parseLong(millisecondsAsString);
             // Convert it into a date
             Calendar date = Calendar.getInstance();
