@@ -34,6 +34,7 @@ import javax.json.JsonArray;
 import javax.json.JsonArrayBuilder;
 import javax.json.JsonObject;
 import javax.json.JsonObjectBuilder;
+import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
 import org.junit.Test;
@@ -531,21 +532,6 @@ public class CPTADSWSMessageTest
     }
 
     /**
-     * Test of mergeDSWSResponseWithCPTAFormat method, of class CPTADSWSMessage.
-     */
-/*    @Test
-    public void testMergeDSWSResponseWithCPTAFormat()
-    {
-        System.out.println("mergeDSWSResponseWithCPTAFormat");
-        JsonObject newDSWSData = null;
-        JsonObjectBuilder existingDSWSDataInCPTAFormat = null;
-        CPTADSWSMessage instance = new CPTADSWSMessage();
-        instance.mergeDSWSResponseWithCPTAFormat(newDSWSData, existingDSWSDataInCPTAFormat);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }
-
-    /**
      * Test of getDataResultDates method, of class CPTADSWSMessage.
      */
     @Test
@@ -576,7 +562,7 @@ public class CPTADSWSMessageTest
         Calendar now = Calendar.getInstance();
         // Turn into milliseconds
         long nowAsMilliseconds = now.getTimeInMillis();
-        String nowAsDSWSDate = "\\/Date(" + Long.toString(nowAsMilliseconds) + "+0000)\\/";
+        String nowAsDSWSDate = "/Date(" + Long.toString(nowAsMilliseconds) + "+0000)/";
         jsonDateArray.add(nowAsDSWSDate);
         jsonDataResponse.add("Dates", jsonDateArray);
         dataResponseObject = jsonDataResponse.build();
@@ -904,22 +890,93 @@ public class CPTADSWSMessageTest
     }
 
     /**
-     * Test of getResult method, of class CPTADSWSMessage.
+     * Test of getResultsByRic method, of class CPTADSWSMessage.
      */
-/*    @Test
-    public void testGetResult()
+    @Test
+    public void testaddDSWSRowsToExistingResult()
     {
-        System.out.println("getResult");
-        ProcessContext context = null;
-        List<CPTAInstrumentSymbology> symbols = null;
-        List<String> fields = null;
-        List<CPTADSSProperty> properties = null;
+        
+        System.out.println("addDSWSRowsToExistingResult");
+        
+        // start with an empty results
+        HashMap<String, List<CPTAFieldValue>> resultsByRic = new HashMap<>(); 
+        JsonArrayBuilder existingDataInCPTAFormat = Json.createArrayBuilder();
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        JsonObject expResult = null;
-        JsonObject result = instance.getResult(context, symbols, fields, properties);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
-    }*/
-
+        instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
+        assertNotNull(existingDataInCPTAFormat);
+        JsonArray result = existingDataInCPTAFormat.build();
+        assertTrue(result.isEmpty());
+        // one ric, one date, one field
+        String ric1 = UUID.randomUUID().toString();
+        String field1 = UUID.randomUUID().toString();
+        double ric1Field1Value = Math.random();
+        Calendar now = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        String date1 = simpleDateFormat.format(now.getTime());
+        resultsByRic = new HashMap<>(); 
+        CPTAFieldValue value1 = new CPTAFieldValue();
+        value1.date = date1;
+        value1.name = field1;
+        value1.value = Double.toString(ric1Field1Value);
+        List<CPTAFieldValue> valueList1 = new ArrayList<>();
+        valueList1.add(value1);
+        resultsByRic.put(ric1, valueList1);
+        existingDataInCPTAFormat = Json.createArrayBuilder();
+        instance = new CPTADSWSMessage();
+        instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
+        // should not be empty
+        assertNotNull(existingDataInCPTAFormat);
+        result = existingDataInCPTAFormat.build();
+        assertTrue(false == result.isEmpty());
+        //Get the number of rows, should be one
+        assertEquals(result.size(),1);
+        JsonObject row1 = result.getJsonObject(0);
+        assertNotNull(row1);
+        // Has ric, date, field = value
+        assertEquals(row1.size(),3);
+        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.RIC_FIELD_NAME),ric1);
+        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME),date1);
+        assertEquals(row1.getString(field1), Double.toString(ric1Field1Value));
+        
+        // one ric two dates, one field
+        now.add(Calendar.YEAR, -1);
+        double ric1Field2Value2 = Math.random();
+        String date2 = simpleDateFormat.format(now.getTime());
+        resultsByRic = new HashMap<>(); 
+        CPTAFieldValue value2 = new CPTAFieldValue();
+        value2.date = date2;
+        value2.name = field1;
+        value2.value = Double.toString(ric1Field2Value2);
+        valueList1 = new ArrayList<>();
+        valueList1.add(value1);
+        valueList1.add(value2);
+        resultsByRic.put(ric1, valueList1);
+        existingDataInCPTAFormat = Json.createArrayBuilder();
+        instance = new CPTADSWSMessage();
+        instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
+        // should not be empty
+        assertNotNull(existingDataInCPTAFormat);
+        result = existingDataInCPTAFormat.build();
+        assertTrue(false == result.isEmpty());
+        //Get the number of rows, should be 2
+        assertEquals(result.size(),2);
+        // rics should be one
+        
+        // one ric two dates two fields
+        // two rics one date one field
+    }
+    
+    @Test
+    public void testmergeDSWSResponseWithCPTAFormat()
+    {
+        System.out.println("mergeDSWSResponseWithCPTAFormat");
+        String testResponse = "{\"DataResponse\":{\"AdditionalResponses\":[{\"Key\":\"Frequency\",\"Value\":\"D\"}],\"DataTypeNames\":null,\"DataTypeValues\":[{\"DataType\":\"RI\",\"SymbolValues\":[{\"Currency\":\"U$\",\"Symbol\":\"<ISRG.OQ>\",\"Type\":10,\"Value\":[9757.15]},{\"Currency\":\"U$\",\"Symbol\":\"<AVB.N>\",\"Type\":10,\"Value\":[3226.13]}]}],\"Dates\":[\"\\/Date(1575244800000+0000)\\/\"],\"SymbolNames\":null,\"Tag\":null},\"Properties\":null}";
+        JsonReader JsonReader = Json.createReader(new StringReader(testResponse));
+        JsonObject parsedResponse = JsonReader.readObject();
+        CPTADSWSMessage instance = new CPTADSWSMessage();
+        JsonArrayBuilder existingDataInCPTAFormat = Json.createArrayBuilder();
+        instance.mergeDSWSResponseWithCPTAFormat(parsedResponse, existingDataInCPTAFormat);
+        String t = existingDataInCPTAFormat.build().toString();
+        System.out.println(t);
+    }
 }
