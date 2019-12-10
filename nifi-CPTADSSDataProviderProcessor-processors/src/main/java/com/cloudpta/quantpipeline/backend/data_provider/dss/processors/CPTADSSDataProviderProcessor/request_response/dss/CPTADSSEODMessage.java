@@ -23,6 +23,7 @@ import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbolo
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import java.util.List;
 import javax.json.JsonObject;
+import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 
 /**
@@ -34,6 +35,7 @@ public class CPTADSSEODMessage extends CPTADSSMessage
     @Override
     public JsonObject getResult
                               (
+                              ComponentLog logger, 
                               ProcessContext context, 
                               List<CPTAInstrumentSymbology> symbols, 
                               List<String> fields, 
