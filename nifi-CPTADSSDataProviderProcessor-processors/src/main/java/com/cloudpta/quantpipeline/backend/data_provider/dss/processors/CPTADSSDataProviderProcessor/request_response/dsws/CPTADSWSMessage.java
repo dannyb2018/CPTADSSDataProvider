@@ -44,6 +44,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 
 /**
@@ -55,6 +56,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     @Override
     public JsonObject getResult
                               (
+                              ComponentLog logger, 
                               ProcessContext context, 
                               List<CPTAInstrumentSymbology> symbols, 
                               List<String> fields, 
