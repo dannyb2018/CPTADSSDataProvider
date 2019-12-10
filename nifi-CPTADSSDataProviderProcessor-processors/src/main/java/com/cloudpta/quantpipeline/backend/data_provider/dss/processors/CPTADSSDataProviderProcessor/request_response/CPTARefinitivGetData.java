@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import javax.json.JsonObject;
+import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 
 /**
@@ -33,7 +34,7 @@ import org.apache.nifi.processor.ProcessContext;
  */
 public class CPTARefinitivGetData
 {
-    public static JsonObject getData(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    public static JsonObject getData(ComponentLog logger, ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
     {
         HashMap<String,List<String>> mappedFields = new HashMap<>();
         // for each type get the fields
@@ -70,6 +71,7 @@ public class CPTARefinitivGetData
                 // Get the data
                 JsonObject response = message.getResult
                                                       (
+                                                      logger,
                                                       context, 
                                                       symbols, 
                                                       fieldsForThisMessageType,
