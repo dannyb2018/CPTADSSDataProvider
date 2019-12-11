@@ -39,4 +39,6 @@ public abstract class CPTARefinitivMessage
                                        List<String> fields, 
                                        List<CPTADSSProperty> properties
                                        );
+                                       
+    public abstract String getMessageType();
 }
