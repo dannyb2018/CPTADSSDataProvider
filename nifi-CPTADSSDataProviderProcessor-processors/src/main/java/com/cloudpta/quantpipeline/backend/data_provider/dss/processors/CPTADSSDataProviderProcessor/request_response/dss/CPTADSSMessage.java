@@ -20,6 +20,7 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss;
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
 import java.io.StringReader;
@@ -59,6 +60,8 @@ public class CPTADSSMessage extends CPTARefinitivMessage
     {
         msgLogger = logger;
         // Get username and password from context
+        context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
+        context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
         // Get the data
         // Convert it to standardard format
         return null;
@@ -329,6 +332,13 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         }        
     }
     
+    @Override
+    public String getMessageType()
+    {
+        return messageType;
+    }
+    
+    String messageType;
     String user = null;
     String password = null;
     protected String urlHost = "https://hosted.datascopeapi.reuters.com/RestApi/v1";
