@@ -60,23 +60,23 @@ public class CPTADSWSMessageTest
         // Parse the result
         JsonObject generatedTokeRequest = Json.createReader(new StringReader(generatedTokenRequestAsString)).readObject();
         // Check properties exists
-        JsonValue propertiesValue = generatedTokeRequest.get(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        JsonValue propertiesValue = generatedTokeRequest.get(CPTADSWSConstants.PROPERTIES_FIELD);
         assertNotNull(propertiesValue);        
         // Check properties is null
         assertEquals(propertiesValue.getValueType(), ValueType.NULL);
         // Check user name exists
-        JsonValue userNameValue = generatedTokeRequest.get(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_FIELD);
+        JsonValue userNameValue = generatedTokeRequest.get(CPTADSWSConstants.USER_NAME_FIELD);
         assertNotNull(userNameValue);        
         // Check user name matches what was put in
         assertNotEquals(userNameValue.getValueType(), ValueType.NULL);
-        String generatedUserName = generatedTokeRequest.getString(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_FIELD);
+        String generatedUserName = generatedTokeRequest.getString(CPTADSWSConstants.USER_NAME_FIELD);
         assertEquals(userName, generatedUserName);
         // Check password exists
-        JsonValue passwordValue = generatedTokeRequest.get(CPTADSSDataProviderProcessorConstants.DSWS_PASSSWORD_FIELD);
+        JsonValue passwordValue = generatedTokeRequest.get(CPTADSWSConstants.PASSSWORD_FIELD);
         assertNotNull(passwordValue);        
         // Check password matches what was put in
         assertNotEquals(passwordValue.getValueType(), ValueType.NULL);
-        String generatedPassword = generatedTokeRequest.getString(CPTADSSDataProviderProcessorConstants.DSWS_PASSSWORD_FIELD);
+        String generatedPassword = generatedTokeRequest.getString(CPTADSWSConstants.PASSSWORD_FIELD);
         assertEquals(password, generatedPassword);
     }
 
@@ -135,57 +135,57 @@ public class CPTADSWSMessageTest
         assertNotNull(parsedRequest);
 
         // lets check properties are null
-        assertTrue(parsedRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(parsedRequest.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // lets check token isnt null and token is what we passed in        
-        assertTrue(false == parsedRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD));
-        String tokenValue = parsedRequest.getString(CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD);
+        assertTrue(false == parsedRequest.isNull(CPTADSWSConstants.TOKEN_VALUE_FIELD));
+        String tokenValue = parsedRequest.getString(CPTADSWSConstants.TOKEN_VALUE_FIELD);
         assertNotNull(tokenValue);
         assertEquals(tokenValue,authorisationToken);
         
         // next with data request object
-        JsonObject dataRequest = parsedRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_DATA_REQUEST_FIELD);
+        JsonObject dataRequest = parsedRequest.getJsonObject(CPTADSWSConstants.DATA_REQUEST_FIELD);
         assertNotNull(dataRequest);
         
         // Tag should always be null
-        assertTrue(dataRequest.isNull(CPTADSSDataProviderProcessorConstants.DSWS_TAG_FIELD));
+        assertTrue(dataRequest.isNull(CPTADSWSConstants.TAG_FIELD));
         // Get datatypes
-        JsonArray dataTypes = dataRequest.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPES_FIELD);
+        JsonArray dataTypes = dataRequest.getJsonArray(CPTADSWSConstants.DATA_TYPES_FIELD);
         assertNotNull(dataTypes);
         // Has one object
         assertEquals(dataTypes.size(),1);
         JsonObject theDataType = dataTypes.getJsonObject(0);
         assertNotNull(theDataType);
         // properties of the object are null
-        assertTrue(theDataType.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(theDataType.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // value is equal to the field we put in
-        assertTrue(false == theDataType.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
-        String value = theDataType.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertTrue(false == theDataType.isNull(CPTADSWSConstants.VALUE_FIELD));
+        String value = theDataType.getString(CPTADSWSConstants.VALUE_FIELD);
         assertEquals(field, value);
         
         // Next get instrument
-        JsonObject instrumentObject = dataRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_INSTRUMENT_FIELD);
+        JsonObject instrumentObject = dataRequest.getJsonObject(CPTADSWSConstants.INSTRUMENT_FIELD);
         assertNotNull(instrumentObject);
         // The list should be what we passed in
-        value = instrumentObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        value = instrumentObject.getString(CPTADSWSConstants.VALUE_FIELD);
         assertNotNull(value);
         assertEquals(symbolList, value);
         // The properties should be null
-        assertTrue(instrumentObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(instrumentObject.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         
         // Finally check date properties
-        JsonObject dateProperties = dataRequest.getJsonObject(CPTADSSDataProviderProcessorConstants.DSWS_DATE_FIELD);
+        JsonObject dateProperties = dataRequest.getJsonObject(CPTADSWSConstants.DATE_FIELD);
         assertNotNull(dateProperties);
         // Kind is always one
-        int kind = dateProperties.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kind, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        int kind = dateProperties.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kind, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // it is an EOD request by default
         // So end date is now and start date is now and frequency is day
-        String endDate = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDate, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
-        String startDate = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
-        assertEquals(startDate, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
-        String frequency = dateProperties.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
-        assertEquals(frequency, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        String endDate = dateProperties.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDate, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
+        String startDate = dateProperties.getString(CPTADSWSConstants.START_OFFSET_FIELD);
+        assertEquals(startDate, CPTADSWSConstants.START_DATE_PROPERTY_DEFAULT);
+        String frequency = dateProperties.getString(CPTADSWSConstants.FREQUENCY_FIELD);
+        assertEquals(frequency, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
     }
 
     /**
@@ -227,10 +227,10 @@ public class CPTADSWSMessageTest
         // Get the object
         JsonObject field1ConvertedAsObject = field1Converted.asJsonObject();
         // Properties should be null
-        assertTrue(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(field1ConvertedAsObject.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Value should be what we passed in as a field
-        assertFalse(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
-        String field1Result = field1ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertFalse(field1ConvertedAsObject.isNull(CPTADSWSConstants.VALUE_FIELD));
+        String field1Result = field1ConvertedAsObject.getString(CPTADSWSConstants.VALUE_FIELD);
         assertEquals(field1, field1Result);
 
         // Then three
@@ -254,10 +254,10 @@ public class CPTADSWSMessageTest
         // Get the object
         field1ConvertedAsObject = field1Converted.asJsonObject();
         // Properties should be null
-        assertTrue(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(field1ConvertedAsObject.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Value should be what we passed in as a field
-        assertFalse(field1ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
-        field1Result = field1ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertFalse(field1ConvertedAsObject.isNull(CPTADSWSConstants.VALUE_FIELD));
+        field1Result = field1ConvertedAsObject.getString(CPTADSWSConstants.VALUE_FIELD);
         assertEquals(field1, field1Result);
         // Get second field
         JsonValue field2Converted = threeFieldsArray.get(1);
@@ -266,10 +266,10 @@ public class CPTADSWSMessageTest
         // Get the object
         JsonObject field2ConvertedAsObject = field2Converted.asJsonObject();
         // Properties should be null
-        assertTrue(field2ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(field2ConvertedAsObject.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Value should be what we passed in as a field
-        assertFalse(field2ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
-        String field2Result = field2ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertFalse(field2ConvertedAsObject.isNull(CPTADSWSConstants.VALUE_FIELD));
+        String field2Result = field2ConvertedAsObject.getString(CPTADSWSConstants.VALUE_FIELD);
         assertEquals(field2, field2Result);
         // Get third field
         JsonValue field3Converted = threeFieldsArray.get(2);
@@ -278,10 +278,10 @@ public class CPTADSWSMessageTest
         // Get the object
         JsonObject field3ConvertedAsObject = field3Converted.asJsonObject();
         // Properties should be null
-        assertTrue(field3ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(field3ConvertedAsObject.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Value should be what we passed in as a field
-        assertFalse(field3ConvertedAsObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
-        String field3Result = field3ConvertedAsObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        assertFalse(field3ConvertedAsObject.isNull(CPTADSWSConstants.VALUE_FIELD));
+        String field3Result = field3ConvertedAsObject.getString(CPTADSWSConstants.VALUE_FIELD);
         assertEquals(field3, field3Result);
         
     }
@@ -303,29 +303,29 @@ public class CPTADSWSMessageTest
         JsonObject defaultDateObject = defaultDateBuilder.build();
         assertNotNull(defaultDateObject);
         // Kind always 1
-        JsonValue kind = defaultDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        JsonValue kind = defaultDateObject.get(CPTADSWSConstants.KIND_FIELD);
         assertNotNull(kind);
-        assertTrue(false == defaultDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
-        int kindValue = defaultDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        assertTrue(false == defaultDateObject.isNull(CPTADSWSConstants.KIND_FIELD));        
+        int kindValue = defaultDateObject.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kindValue, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // End date check
-        JsonValue endDateOffset = defaultDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        JsonValue endDateOffset = defaultDateObject.get(CPTADSWSConstants.END_OFFSET_FIELD);
         assertNotNull(endDateOffset);
-        assertTrue(false == defaultDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
-        String endDateAsString = defaultDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == defaultDateObject.isNull(CPTADSWSConstants.END_OFFSET_FIELD));        
+        String endDateAsString = defaultDateObject.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
         // start date check
-        JsonValue startDateOffset = defaultDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        JsonValue startDateOffset = defaultDateObject.get(CPTADSWSConstants.START_OFFSET_FIELD);
         assertNotNull(startDateOffset);
-        assertTrue(false == defaultDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
-        String startDateAsString = defaultDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
-        assertEquals(startDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == defaultDateObject.isNull(CPTADSWSConstants.START_OFFSET_FIELD));        
+        String startDateAsString = defaultDateObject.getString(CPTADSWSConstants.START_OFFSET_FIELD);
+        assertEquals(startDateAsString, CPTADSWSConstants.START_DATE_PROPERTY_DEFAULT);
         // Frequency check
-        JsonValue frequency = defaultDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        JsonValue frequency = defaultDateObject.get(CPTADSWSConstants.FREQUENCY_FIELD);
         assertNotNull(frequency);
-        assertTrue(false == defaultDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
-        String frequencyAsString = defaultDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
-        assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        assertTrue(false == defaultDateObject.isNull(CPTADSWSConstants.FREQUENCY_FIELD));        
+        String frequencyAsString = defaultDateObject.getString(CPTADSWSConstants.FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
 
         // 2 days before
         properties = new ArrayList<>();
@@ -340,29 +340,29 @@ public class CPTADSWSMessageTest
         JsonObject oneDayBeforeDateObject = oneDayBeforeDateBuilder.build();
         assertNotNull(oneDayBeforeDateObject);
         // Kind always 1
-        kind = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        kind = oneDayBeforeDateObject.get(CPTADSWSConstants.KIND_FIELD);
         assertNotNull(kind);
-        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
-        kindValue = oneDayBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSWSConstants.KIND_FIELD));        
+        kindValue = oneDayBeforeDateObject.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kindValue, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // End date check
-        endDateOffset = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        endDateOffset = oneDayBeforeDateObject.get(CPTADSWSConstants.END_OFFSET_FIELD);
         assertNotNull(endDateOffset);
-        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
-        endDateAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSWSConstants.END_OFFSET_FIELD));        
+        endDateAsString = oneDayBeforeDateObject.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
         // start date check
-        startDateOffset = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        startDateOffset = oneDayBeforeDateObject.get(CPTADSWSConstants.START_OFFSET_FIELD);
         assertNotNull(startDateOffset);
-        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
-        startDateAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSWSConstants.START_OFFSET_FIELD));        
+        startDateAsString = oneDayBeforeDateObject.getString(CPTADSWSConstants.START_OFFSET_FIELD);
         assertEquals(startDateAsString, newStartDateProperty.value);
         // Frequency check
-        frequency = oneDayBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        frequency = oneDayBeforeDateObject.get(CPTADSWSConstants.FREQUENCY_FIELD);
         assertNotNull(frequency);
-        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
-        frequencyAsString = oneDayBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
-        assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        assertTrue(false == oneDayBeforeDateObject.isNull(CPTADSWSConstants.FREQUENCY_FIELD));        
+        frequencyAsString = oneDayBeforeDateObject.getString(CPTADSWSConstants.FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
 
         // A week beforehand
         properties = new ArrayList<>();
@@ -377,29 +377,29 @@ public class CPTADSWSMessageTest
         JsonObject oneWeekBeforeDateObject = oneWeekBeforeDateBuilder.build();
         assertNotNull(oneWeekBeforeDateObject);
         // Kind always 1
-        kind = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        kind = oneWeekBeforeDateObject.get(CPTADSWSConstants.KIND_FIELD);
         assertNotNull(kind);
-        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
-        kindValue = oneWeekBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSWSConstants.KIND_FIELD));        
+        kindValue = oneWeekBeforeDateObject.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kindValue, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // End date check
-        endDateOffset = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        endDateOffset = oneWeekBeforeDateObject.get(CPTADSWSConstants.END_OFFSET_FIELD);
         assertNotNull(endDateOffset);
-        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
-        endDateAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSWSConstants.END_OFFSET_FIELD));        
+        endDateAsString = oneWeekBeforeDateObject.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
         // start date check
-        startDateOffset = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        startDateOffset = oneWeekBeforeDateObject.get(CPTADSWSConstants.START_OFFSET_FIELD);
         assertNotNull(startDateOffset);
-        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
-        startDateAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSWSConstants.START_OFFSET_FIELD));        
+        startDateAsString = oneWeekBeforeDateObject.getString(CPTADSWSConstants.START_OFFSET_FIELD);
         assertEquals(startDateAsString, newStartDateProperty.value);
         // Frequency check
-        frequency = oneWeekBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        frequency = oneWeekBeforeDateObject.get(CPTADSWSConstants.FREQUENCY_FIELD);
         assertNotNull(frequency);
-        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
-        frequencyAsString = oneWeekBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
-        assertEquals(frequencyAsString, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
+        assertTrue(false == oneWeekBeforeDateObject.isNull(CPTADSWSConstants.FREQUENCY_FIELD));        
+        frequencyAsString = oneWeekBeforeDateObject.getString(CPTADSWSConstants.FREQUENCY_FIELD);
+        assertEquals(frequencyAsString, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
         
         // 1 month by weeks beforehand
         properties = new ArrayList<>();
@@ -418,28 +418,28 @@ public class CPTADSWSMessageTest
         JsonObject oneMonthBeforeDateObject = oneMonthBeforeDateBuilder.build();
         assertNotNull(oneMonthBeforeDateObject);
         // Kind always 1
-        kind = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        kind = oneMonthBeforeDateObject.get(CPTADSWSConstants.KIND_FIELD);
         assertNotNull(kind);
-        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
-        kindValue = oneMonthBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSWSConstants.KIND_FIELD));        
+        kindValue = oneMonthBeforeDateObject.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kindValue, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // End date check
-        endDateOffset = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        endDateOffset = oneMonthBeforeDateObject.get(CPTADSWSConstants.END_OFFSET_FIELD);
         assertNotNull(endDateOffset);
-        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
-        endDateAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSWSConstants.END_OFFSET_FIELD));        
+        endDateAsString = oneMonthBeforeDateObject.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
         // start date check
-        startDateOffset = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        startDateOffset = oneMonthBeforeDateObject.get(CPTADSWSConstants.START_OFFSET_FIELD);
         assertNotNull(startDateOffset);
-        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
-        startDateAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSWSConstants.START_OFFSET_FIELD));        
+        startDateAsString = oneMonthBeforeDateObject.getString(CPTADSWSConstants.START_OFFSET_FIELD);
         assertEquals(startDateAsString, newStartDateProperty.value);
         // Frequency check
-        frequency = oneMonthBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        frequency = oneMonthBeforeDateObject.get(CPTADSWSConstants.FREQUENCY_FIELD);
         assertNotNull(frequency);
-        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
-        frequencyAsString = oneMonthBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertTrue(false == oneMonthBeforeDateObject.isNull(CPTADSWSConstants.FREQUENCY_FIELD));        
+        frequencyAsString = oneMonthBeforeDateObject.getString(CPTADSWSConstants.FREQUENCY_FIELD);
         assertEquals(frequencyAsString, newFrequencyProperty.value);
         
         // 1 year by months beforehand
@@ -459,28 +459,28 @@ public class CPTADSWSMessageTest
         JsonObject oneYearBeforeDateObject = oneYearBeforeDateBuilder.build();
         assertNotNull(oneYearBeforeDateObject);
         // Kind always 1
-        kind = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
+        kind = oneYearBeforeDateObject.get(CPTADSWSConstants.KIND_FIELD);
         assertNotNull(kind);
-        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD));        
-        kindValue = oneYearBeforeDateObject.getInt(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD);
-        assertEquals(kindValue, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSWSConstants.KIND_FIELD));        
+        kindValue = oneYearBeforeDateObject.getInt(CPTADSWSConstants.KIND_FIELD);
+        assertEquals(kindValue, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         // End date check
-        endDateOffset = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
+        endDateOffset = oneYearBeforeDateObject.get(CPTADSWSConstants.END_OFFSET_FIELD);
         assertNotNull(endDateOffset);
-        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD));        
-        endDateAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD);
-        assertEquals(endDateAsString, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSWSConstants.END_OFFSET_FIELD));        
+        endDateAsString = oneYearBeforeDateObject.getString(CPTADSWSConstants.END_OFFSET_FIELD);
+        assertEquals(endDateAsString, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
         // start date check
-        startDateOffset = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        startDateOffset = oneYearBeforeDateObject.get(CPTADSWSConstants.START_OFFSET_FIELD);
         assertNotNull(startDateOffset);
-        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD));        
-        startDateAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSWSConstants.START_OFFSET_FIELD));        
+        startDateAsString = oneYearBeforeDateObject.getString(CPTADSWSConstants.START_OFFSET_FIELD);
         assertEquals(startDateAsString, newStartDateProperty.value);
         // Frequency check
-        frequency = oneYearBeforeDateObject.get(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        frequency = oneYearBeforeDateObject.get(CPTADSWSConstants.FREQUENCY_FIELD);
         assertNotNull(frequency);
-        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD));        
-        frequencyAsString = oneYearBeforeDateObject.getString(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD);
+        assertTrue(false == oneYearBeforeDateObject.isNull(CPTADSWSConstants.FREQUENCY_FIELD));        
+        frequencyAsString = oneYearBeforeDateObject.getString(CPTADSWSConstants.FREQUENCY_FIELD);
         assertEquals(frequencyAsString, newFrequencyProperty.value);
         
     }
@@ -501,15 +501,15 @@ public class CPTADSWSMessageTest
         assertNotNull(emptyInstrumentBuilder);
         JsonObject emptyInstrument = emptyInstrumentBuilder.build();
         // Get properties
-        JsonValue properties = emptyInstrument.get(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        JsonValue properties = emptyInstrument.get(CPTADSWSConstants.PROPERTIES_FIELD);
         // Should exist but be null entry 
         assertNotNull(properties);
-        assertTrue(emptyInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(emptyInstrument.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Get instrument list
-        String emptySymboltList = emptyInstrument.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        String emptySymboltList = emptyInstrument.getString(CPTADSWSConstants.VALUE_FIELD);
         // should be empty
         assertNotNull(emptySymboltList);
-        assertTrue(false == emptyInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD));
+        assertTrue(false == emptyInstrument.isNull(CPTADSWSConstants.VALUE_FIELD));
         assertEquals(emptySymboltList, "");
 
         // The random string for symbols
@@ -520,12 +520,12 @@ public class CPTADSWSMessageTest
         assertNotNull(randomInstrumentBuilder);
         JsonObject randomInstrument = randomInstrumentBuilder.build();
         // Get properties
-        properties = randomInstrument.get(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        properties = randomInstrument.get(CPTADSWSConstants.PROPERTIES_FIELD);
         // Should exist but be null entry 
         assertNotNull(properties);
-        assertTrue(randomInstrument.isNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD));
+        assertTrue(randomInstrument.isNull(CPTADSWSConstants.PROPERTIES_FIELD));
         // Get instrument list
-        String randomSymbolList = randomInstrument.getString(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+        String randomSymbolList = randomInstrument.getString(CPTADSWSConstants.VALUE_FIELD);
         // should be same as the list string passed in
         assertNotNull(randomSymbolList);
         assertEquals(randomSymbolList, symbolList);
@@ -541,7 +541,7 @@ public class CPTADSWSMessageTest
         // \/Date(1574985600000+0000)\/
         System.out.println("getDataResultDates");
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
         
         // Build basic response
         JsonArrayBuilder jsonDateArray = Json.createArrayBuilder();
@@ -585,13 +585,13 @@ public class CPTADSWSMessageTest
         System.out.println("getResultsByRic");
 
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
         String nowDate = simpleDateFormat.format(now.getTime());
         
         // Start by handling a empty result
         JsonObjectBuilder dataResponseObjectBuilder = Json.createObjectBuilder();
         JsonArrayBuilder dataTypeValuesBuilder = Json.createArrayBuilder();   
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         JsonObject dataResponseObject = dataResponseObjectBuilder.build();
         List<String> dates = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
@@ -609,22 +609,22 @@ public class CPTADSWSMessageTest
         double field1Ric1Value1 = Math.random();
         // build the symbol values
         JsonObjectBuilder ric1SymbolValueBuilder = Json.createObjectBuilder();
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         JsonArrayBuilder ric1Field1ValuesBuilder = Json.createArrayBuilder();   
         ric1Field1ValuesBuilder.add(field1Ric1Value1);
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field1ValuesBuilder);
         JsonArrayBuilder field1SymbolValuesBuilder = Json.createArrayBuilder();
         field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         JsonObjectBuilder field1ResponseBuilder = Json.createObjectBuilder();
         // This is the field
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         // Add this to the list of field responses
         dataTypeValuesBuilder.add(field1ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         instance = new CPTADSWSMessage();
         result = instance.getResultsByRic(dataResponseObject, dates);
@@ -643,34 +643,34 @@ public class CPTADSWSMessageTest
         String ric2 = UUID.randomUUID().toString();
         // build the symbol values for second ric
         JsonObjectBuilder ric2SymbolValueBuilder = Json.createObjectBuilder();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 14);
         // The symbols are ric codes within brackets
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         JsonArrayBuilder ric2Field1ValuesBuilder = Json.createArrayBuilder();   
         ric2Field1ValuesBuilder.addNull();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field1ValuesBuilder);
         JsonArrayBuilder field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
         field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1ResponseBuilder = Json.createObjectBuilder();
         // This is the first ric
         ric1SymbolValueBuilder = Json.createObjectBuilder();
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         ric1Field1ValuesBuilder = Json.createArrayBuilder();   
         ric1Field1ValuesBuilder.add(field1Ric1Value1);
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field1ValuesBuilder);
         field1SymbolValuesBuilder = Json.createArrayBuilder();
         field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         // Now add the field response
         field1ResponseBuilder = Json.createObjectBuilder();
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         // Add this to the list of field responses
         dataTypeValuesBuilder.add(field1ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         result = instance.getResultsByRic(dataResponseObject, dates);
         // Cant be empty
@@ -687,12 +687,12 @@ public class CPTADSWSMessageTest
         // handle result with one ric with an error
         // build the symbol values for second ric
         ric2SymbolValueBuilder = Json.createObjectBuilder();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 14);
         // The symbols are ric codes within brackets
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         ric2Field1ValuesBuilder = Json.createArrayBuilder();   
         ric2Field1ValuesBuilder.addNull();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field1ValuesBuilder);
         field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
         field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1ResponseBuilder = Json.createObjectBuilder();
@@ -701,11 +701,11 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         // Now add the field response
         field1ResponseBuilder = Json.createObjectBuilder();
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         // Add this to the list of field responses
         dataTypeValuesBuilder.add(field1ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         result = instance.getResultsByRic(dataResponseObject, dates);
         // Should be empty
@@ -714,34 +714,34 @@ public class CPTADSWSMessageTest
         // handle two rics with an error
         // build the symbol values for second ric
         ric2SymbolValueBuilder = Json.createObjectBuilder();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 14);
         // The symbols are ric codes within brackets
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         ric2Field1ValuesBuilder = Json.createArrayBuilder();   
         ric2Field1ValuesBuilder.addNull();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field1ValuesBuilder);
         field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
         field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1ResponseBuilder = Json.createObjectBuilder();
         // This is the first ric
         ric1SymbolValueBuilder = Json.createObjectBuilder();
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 14);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 14);
         // The symbols are ric codes within brackets
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         ric1Field1ValuesBuilder = Json.createArrayBuilder();   
         ric1Field1ValuesBuilder.addNull();
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field1ValuesBuilder);
         field1SymbolValuesBuilder = Json.createArrayBuilder();
         field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         // Now add the field response
         field1ResponseBuilder = Json.createObjectBuilder();
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         // Add this to the list of field responses
         dataTypeValuesBuilder.add(field1ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         result = instance.getResultsByRic(dataResponseObject, dates);
         assertTrue(result.isEmpty());
@@ -750,34 +750,34 @@ public class CPTADSWSMessageTest
         double field1Ric2Value1 = Math.random();
         // build the symbol values for second ric
         ric2SymbolValueBuilder = Json.createObjectBuilder();
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         ric2Field1ValuesBuilder = Json.createArrayBuilder();   
         ric2Field1ValuesBuilder.add(field1Ric2Value1);
-        ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field1ValuesBuilder);
         field1Ric2SymbolValuesBuilder = Json.createArrayBuilder();
         field1Ric2SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1ResponseBuilder = Json.createObjectBuilder();
         // This is the first ric
         ric1SymbolValueBuilder = Json.createObjectBuilder();
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         ric1Field1ValuesBuilder = Json.createArrayBuilder();   
         ric1Field1ValuesBuilder.add(field1Ric1Value1);
-        ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field1ValuesBuilder);
         field1SymbolValuesBuilder = Json.createArrayBuilder();
         field1SymbolValuesBuilder.add(ric1SymbolValueBuilder);
         field1SymbolValuesBuilder.add(ric2SymbolValueBuilder);
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         // Now add the field response
         field1ResponseBuilder = Json.createObjectBuilder();
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         // Add this to the list of field responses
         dataTypeValuesBuilder.add(field1ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         result = instance.getResultsByRic(dataResponseObject, dates);
         assertTrue(false == result.isEmpty());
@@ -810,57 +810,57 @@ public class CPTADSWSMessageTest
         // Start with first field
         // build the symbol values for second ric
         JsonObjectBuilder field1Ric2SymbolValueBuilder = Json.createObjectBuilder();
-        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        field1Ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        field1Ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         ric2Field1ValuesBuilder = Json.createArrayBuilder();   
         ric2Field1ValuesBuilder.add(field1Ric2Value1);
-        field1Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field1ValuesBuilder);
+        field1Ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field1ValuesBuilder);
         // This is the first ric
         JsonObjectBuilder field1Ric1SymbolValueBuilder = Json.createObjectBuilder();
-        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        field1Ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        field1Ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         ric1Field1ValuesBuilder = Json.createArrayBuilder();   
         ric1Field1ValuesBuilder.add(field1Ric1Value1);
-        field1Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field1ValuesBuilder);
+        field1Ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field1ValuesBuilder);
         // add both values for field1
         field1SymbolValuesBuilder = Json.createArrayBuilder();
         field1SymbolValuesBuilder.add(field1Ric1SymbolValueBuilder);
         field1SymbolValuesBuilder.add(field1Ric2SymbolValueBuilder);
         // Now add the field response
         field1ResponseBuilder = Json.createObjectBuilder();
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field1);
-        field1ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
+        field1ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field1);
+        field1ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field1SymbolValuesBuilder);
         // Now do same for second field
         // build the symbol values for second ric
         JsonObjectBuilder field2Ric2SymbolValueBuilder = Json.createObjectBuilder();
-        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        field2Ric2SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric2 + ">");
+        field2Ric2SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric2 + ">");
         JsonArrayBuilder ric2Field2ValuesBuilder = Json.createArrayBuilder();   
         ric2Field2ValuesBuilder.add(field2Ric2Value1);
-        field2Ric2SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric2Field2ValuesBuilder);
+        field2Ric2SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric2Field2ValuesBuilder);
         // This is the first ric
         JsonObjectBuilder field2Ric1SymbolValueBuilder = Json.createObjectBuilder();
-        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD, 10);
+        field2Ric1SymbolValueBuilder.add(CPTADSWSConstants.TYPE_FIELD, 10);
         // The symbols are ric codes within brackets
-        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD, "<" + ric1 + ">");
+        field2Ric1SymbolValueBuilder.add(CPTADSWSConstants.SYMBOL_FIELD, "<" + ric1 + ">");
         JsonArrayBuilder ric1Field2ValuesBuilder = Json.createArrayBuilder();   
         ric1Field2ValuesBuilder.add(field2Ric1Value1);
-        field2Ric1SymbolValueBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, ric1Field2ValuesBuilder);
+        field2Ric1SymbolValueBuilder.add(CPTADSWSConstants.VALUE_FIELD, ric1Field2ValuesBuilder);
         JsonArrayBuilder field2SymbolValuesBuilder = Json.createArrayBuilder();
         field2SymbolValuesBuilder.add(field2Ric1SymbolValueBuilder);
         field2SymbolValuesBuilder.add(field2Ric2SymbolValueBuilder);
         // Now add the field response
         JsonObjectBuilder field2ResponseBuilder = Json.createObjectBuilder();
-        field2ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD, field2);
-        field2ResponseBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD, field2SymbolValuesBuilder);
+        field2ResponseBuilder.add(CPTADSWSConstants.DATA_TYPE_FIELD, field2);
+        field2ResponseBuilder.add(CPTADSWSConstants.SYMBOL_VALUES_FIELD, field2SymbolValuesBuilder);
         // Add this to the list of field responses
         dataTypeValuesBuilder = Json.createArrayBuilder();   
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataTypeValuesBuilder.add(field2ResponseBuilder);
-        dataResponseObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
+        dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
         result = instance.getResultsByRic(dataResponseObject, dates);
         // Shouldnt be empty
@@ -911,7 +911,7 @@ public class CPTADSWSMessageTest
         String field1 = UUID.randomUUID().toString();
         double ric1Field1Value = Math.random();
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
         String date1 = simpleDateFormat.format(now.getTime());
         resultsByRic = new HashMap<>(); 
         CPTAFieldValue value1 = new CPTAFieldValue();
