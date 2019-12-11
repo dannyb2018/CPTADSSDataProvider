@@ -53,6 +53,11 @@ import org.apache.nifi.processor.ProcessContext;
  */
 public class CPTADSWSMessage extends CPTARefinitivMessage
 {
+    public String getMessageType()
+    {
+        return CPTADSWSConstants.MESSAGE_TYPE;
+    }
+    
     @Override
     public JsonObject getResult
                               (
@@ -119,7 +124,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         
         // Make the request
         Client tokenRequestClient = javax.ws.rs.client.ClientBuilder.newClient();             
-        String tokenRequestURL = baseURL + CPTADSSDataProviderProcessorConstants.DSWS_GET_TOKEN;
+        String tokenRequestURL = baseURL + CPTADSWSConstants.GET_TOKEN;
         WebTarget tokenRequestTarget = tokenRequestClient.target(tokenRequestURL);
         // Get response
         Response tokenRequestRespinse = tokenRequestTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(tokenRequestAsString));
@@ -130,7 +135,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         String tokenResponseString = tokenRequestRespinse.readEntity(String.class);
         JsonReader JsonReader = Json.createReader(new StringReader(tokenResponseString));
         JsonObject tokenResponseAsJson = JsonReader.readObject();
-        String token = tokenResponseAsJson.getString(CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD, "");
+        String token = tokenResponseAsJson.getString(CPTADSWSConstants.TOKEN_VALUE_FIELD, "");
         
         return token;
     }
@@ -154,7 +159,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                                     );
         // Make actual request
         Client dataRequestClient = javax.ws.rs.client.ClientBuilder.newClient(); 
-        String dataRequestURL = baseURL + CPTADSSDataProviderProcessorConstants.DSWS_GET_DATA;
+        String dataRequestURL = baseURL + CPTADSWSConstants.GET_DATA;
         WebTarget dataRequestTarget = dataRequestClient.target(dataRequestURL);
         Response dataRequestResponse = dataRequestTarget.request(MediaType.APPLICATION_JSON).post(Entity.json(dataRequestAsString));
         // If the response is not ok then we have a problem
@@ -175,17 +180,17 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         // The request is user name
         tokenRequestBuilder.add
                               (
-                              CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_FIELD, 
+                              CPTADSWSConstants.USER_NAME_FIELD, 
                               userName
                               );
         // Password
         tokenRequestBuilder.add
                               (
-                              CPTADSSDataProviderProcessorConstants.DSWS_PASSSWORD_FIELD, 
+                              CPTADSWSConstants.PASSSWORD_FIELD, 
                               password
                               );
         // And properties, which for us is always null
-        tokenRequestBuilder.addNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        tokenRequestBuilder.addNull(CPTADSWSConstants.PROPERTIES_FIELD);
         // Turn the JsonObject into a string so we can make a request
         String tokenRequestAsString = tokenRequestBuilder.build().toString();
         
@@ -236,15 +241,15 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         // Start with the values at the end, token and properties
         dataRequestBuilder.add
                              (
-                             CPTADSSDataProviderProcessorConstants.DSWS_TOKEN_VALUE_FIELD, 
+                             CPTADSWSConstants.TOKEN_VALUE_FIELD, 
                              authorisationToken
                              );
-        dataRequestBuilder.addNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        dataRequestBuilder.addNull(CPTADSWSConstants.PROPERTIES_FIELD);
         // Add data request object
         JsonObjectBuilder dataRequestObjectBuilder = getDataRequestObject(symbolList, fields, properties);
         dataRequestBuilder.add
                              (
-                             CPTADSSDataProviderProcessorConstants.DSWS_DATA_REQUEST_FIELD, 
+                             CPTADSWSConstants.DATA_REQUEST_FIELD, 
                              dataRequestObjectBuilder
                              );
         
@@ -265,25 +270,25 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         JsonArrayBuilder fieldsArrayBuilder = getFieldsArrayBuilder(fields);
         dataRequestObjectBuilder.add
                                    (
-                                   CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPES_FIELD, 
+                                   CPTADSWSConstants.DATA_TYPES_FIELD, 
                                    fieldsArrayBuilder
                                    );
         // Add Date aka properties
         JsonObjectBuilder dataBuilder = getDateObjectBuilder(properties);
         dataRequestObjectBuilder.add
                                    (
-                                   CPTADSSDataProviderProcessorConstants.DSWS_DATE_FIELD, 
+                                   CPTADSWSConstants.DATE_FIELD, 
                                    dataBuilder
                                    );
         // Add instruments
         JsonObjectBuilder instrumentBuilder = getInstrumentObjectBuilder(symbolList);
         dataRequestObjectBuilder.add
                                    (
-                                   CPTADSSDataProviderProcessorConstants.DSWS_INSTRUMENT_FIELD, 
+                                   CPTADSWSConstants.INSTRUMENT_FIELD, 
                                    instrumentBuilder
                                    );
         // Finally add tag which is just null
-        dataRequestObjectBuilder.addNull(CPTADSSDataProviderProcessorConstants.DSWS_TAG_FIELD);
+        dataRequestObjectBuilder.addNull(CPTADSWSConstants.TAG_FIELD);
         
         // Hand back the builder
         return dataRequestObjectBuilder;
@@ -303,11 +308,11 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
             // Create the object
             JsonObjectBuilder currentFieldObjectBuidler = Json.createObjectBuilder();
             // Properties always null for us
-            currentFieldObjectBuidler.addNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+            currentFieldObjectBuidler.addNull(CPTADSWSConstants.PROPERTIES_FIELD);
             // Value is the field
             currentFieldObjectBuidler.add
                                         (
-                                        CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, 
+                                        CPTADSWSConstants.VALUE_FIELD, 
                                         currentField
                                         );
             
@@ -335,12 +340,12 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         //          }
         JsonObjectBuilder dateObjectBuilder = Json.createObjectBuilder();
         // For now kind is always 1
-        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_KIND_FIELD_DEFAULT);
+        dateObjectBuilder.add(CPTADSWSConstants.KIND_FIELD, CPTADSWSConstants.KIND_FIELD_DEFAULT);
         
         // Default is the last day only
-        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_END_DATE_PROPERTY_DEFAULT);
-        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_PROPERTY_DEFAULT);
-        dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD, CPTADSSDataProviderProcessorConstants.DSWS_START_DATE_PROPERTY_DEFAULT);
+        dateObjectBuilder.add(CPTADSWSConstants.END_OFFSET_FIELD, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
+        dateObjectBuilder.add(CPTADSWSConstants.FREQUENCY_FIELD, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
+        dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, CPTADSWSConstants.START_DATE_PROPERTY_DEFAULT);
         
         // Loop through properties
         for(CPTADSSProperty currentProperty : properties )
@@ -349,19 +354,19 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
             if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY))
             {
                 // Add Frequency
-                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_FREQUENCY_FIELD, currentProperty.value);
+                dateObjectBuilder.add(CPTADSWSConstants.FREQUENCY_FIELD, currentProperty.value);
             }
             // If it is end offset
             else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_END_DATE_PROPERTY))
             {
                 // Add End
-                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_END_OFFSET_FIELD, currentProperty.value);
+                dateObjectBuilder.add(CPTADSWSConstants.END_OFFSET_FIELD, currentProperty.value);
             }
             // If it is start offset
             else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY))
             {
                 // Add Start
-                dateObjectBuilder.add(CPTADSSDataProviderProcessorConstants.DSWS_START_OFFSET_FIELD, currentProperty.value);
+                dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, currentProperty.value);
             }
         }
         
@@ -378,11 +383,11 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         //          }
         JsonObjectBuilder instrumentObjectBuilder = Json.createObjectBuilder();
         // Properties for us is always null
-        instrumentObjectBuilder.addNull(CPTADSSDataProviderProcessorConstants.DSWS_PROPERTIES_FIELD);
+        instrumentObjectBuilder.addNull(CPTADSWSConstants.PROPERTIES_FIELD);
         // Value is the list of instruments
         instrumentObjectBuilder.add
                                   (
-                                  CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD, 
+                                  CPTADSWSConstants.VALUE_FIELD, 
                                   symbolList
                                   );
         
@@ -482,8 +487,8 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     
     protected List<String> getDataResultDates(JsonObject dataResponseObject)
     {
-        JsonArray dates = dataResponseObject.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATES_FIELD);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.DATA_RESPONSE_DATE_FORMAT);
+        JsonArray dates = dataResponseObject.getJsonArray(CPTADSWSConstants.DATES_FIELD);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
         ArrayList<String> datesAsString = new ArrayList<>();
         
         // Go through each of the dates to convert it to a date string
@@ -513,25 +518,25 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     {
         HashMap<String, List<CPTAFieldValue>> resultsByRic = new HashMap<>();        
         // Need to go through the 
-        JsonArray fields = dataResponseObject.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_VALUES_FIELD);
+        JsonArray fields = dataResponseObject.getJsonArray(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD);
         // Loop through all the data type values
         for( int i = 0; i < fields.size(); i++)
         {
             // Get the block for this field type
             JsonObject currentFieldBlock = fields.getJsonObject(i);
             // get the field name, this is in DataType in json
-            String fieldName = currentFieldBlock.getString(CPTADSSDataProviderProcessorConstants.DSWS_DATA_TYPE_FIELD);
+            String fieldName = currentFieldBlock.getString(CPTADSWSConstants.DATA_TYPE_FIELD);
             // Now we loop through all the rics
-            JsonArray valuesForThisFieldByRic = currentFieldBlock.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_VALUES_FIELD);
+            JsonArray valuesForThisFieldByRic = currentFieldBlock.getJsonArray(CPTADSWSConstants.SYMBOL_VALUES_FIELD);
             for( int j = 0; j < valuesForThisFieldByRic.size(); j++ )
             {
                 JsonObject valuesForThisRic = valuesForThisFieldByRic.getJsonObject(j);
                 // Check if it is an error, if it is not
-                int errorCode = valuesForThisRic.getInt(CPTADSSDataProviderProcessorConstants.DSWS_TYPE_FIELD);
+                int errorCode = valuesForThisRic.getInt(CPTADSWSConstants.TYPE_FIELD);
                 if( (10 == errorCode) || (12 == errorCode) )
                 {
                     // Set the ric
-                    String ric = valuesForThisRic.getString(CPTADSSDataProviderProcessorConstants.DSWS_SYMBOL_FIELD); 
+                    String ric = valuesForThisRic.getString(CPTADSWSConstants.SYMBOL_FIELD); 
                     ric = ric.substring(1, ric.length()-1);
                     // If there was not an entry for this ric
                     List<CPTAFieldValue> fieldValuesForThisRic = resultsByRic.get(ric);
@@ -549,7 +554,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     valueForThisRicAndField.name = fieldName;
 
                     // Loop through each value
-                    JsonArray fieldValues = valuesForThisRic.getJsonArray(CPTADSSDataProviderProcessorConstants.DSWS_VALUE_FIELD);
+                    JsonArray fieldValues = valuesForThisRic.getJsonArray(CPTADSWSConstants.VALUE_FIELD);
                     for( int k = 0; k < fieldValues.size(); k++ )
                     {
                         JsonValue currentValue = fieldValues.get(k);
