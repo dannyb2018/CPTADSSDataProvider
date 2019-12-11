@@ -19,29 +19,15 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss;
 
-import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
-import java.util.List;
-import javax.json.JsonObject;
-import org.apache.nifi.logging.ComponentLog;
-import org.apache.nifi.processor.ProcessContext;
-
 /**
  *
  * @author Danny
  */
 public class CPTADSSCompositeMessage extends CPTADSSMessage
 {
-    @Override
-    public JsonObject getResult
-                              (
-                              ComponentLog logger, 
-                              ProcessContext context, 
-                              List<CPTAInstrumentSymbology> symbols, 
-                              List<String> fields, 
-                              List<CPTADSSProperty> properties
-                              )
+    public CPTADSSCompositeMessage()
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        messageType = CPTADSSConstants.COMPOSITE_MESSAGE_TYPE;
+        extractionType = CPTADSSConstants.COMPOSITE_EXTRACTION_TYPE;
     }
 }
