@@ -33,4 +33,18 @@ public interface CPTADSSConstants
     public static final String TS_EXTRACTION_TYPE = "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.PriceHistoryExtractionRequest";
     public static final String COMPOSITE_MESSAGE_TYPE = "DSS.ALL";
     public static final String COMPOSITE_EXTRACTION_TYPE = "#ThomsonReuters.Dss.Api.Extractions.ExtractionRequests.CompositeExtractionRequest";
+
+    public static final String USER_NAME_FIELD = "Username";
+    public static final String PASSWORD_FIELD = "Password";
+    public static final String CREDENTIALS_FIELD = "Credentials";
+    public static final String SESSION_TOKEN_VALUE_FIELD = "value";
+    public static final String CONDITION_FIELD = "Condition";
+    public static final String START_DATE_OFFSET_FIELD = "QueryStartDate";
+    public static final String END_DATE_OFFSET_FIELD = "QueryEndDate";
+    public static final String ADJUSTED_PRICE_FLAG_FIELD = "AdjustedPrices";
+    public static final String DATE_RANGE_TYPE_FIELD = "ReportDateRangeType";
+    public static final String DATE_RANGE_TYPE_DEFAULT_FIELD = "Range";
+
+    public static final String GET_TOKEN_URL = "/Authentication/RequestToken";
+    public static final String GET_DATA_URL = "/Extractions/ExtractWithNotes";
 }
