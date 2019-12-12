@@ -87,14 +87,14 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
     {
         // Set the delta
         JsonObjectBuilder conditions = Json.createObjectBuilder();
-        conditions.add("ReportDateRangeType", "Range");
+        conditions.add(CPTADSSConstants.DATE_RANGE_TYPE_FIELD, CPTADSSConstants.DATE_RANGE_TYPE_DEFAULT_FIELD);
         String startDateAsString = convertCalendarToString(startDate);
-        conditions.add("QueryStartDate", startDateAsString);
+        conditions.add(CPTADSSConstants.START_DATE_OFFSET_FIELD, startDateAsString);
         String endDateAsString = convertCalendarToString(endDate);
-        conditions.add("QueryEndDate", endDateAsString);
-        conditions.add("AdjustedPrices", shouldGetAdjustedPrices);
+        conditions.add(CPTADSSConstants.END_DATE_OFFSET_FIELD, endDateAsString);
+        conditions.add(CPTADSSConstants.ADJUSTED_PRICE_FLAG_FIELD, shouldGetAdjustedPrices);
         // default is null, but will be overrrided for some messages
-        detailsSpecificToThisExtractionRequest.add("Condition", conditions);
+        detailsSpecificToThisExtractionRequest.add(CPTADSSConstants.CONDITION_FIELD, conditions);
     }
         
     protected String convertCalendarToString(Calendar calendarToConvert)
