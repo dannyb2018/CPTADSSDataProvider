@@ -29,7 +29,7 @@ public class CPTADSSTimeSeriesMessage extends CPTADSSMessageWithStartEndDates
     {
         super();
 
-        extractionType = CPTADSSConstants.CA_EXTRACTION_TYPE;
-        messageType = CPTADSSConstants.CA_MESSAGE_TYPE;
+        extractionType = CPTADSSConstants.TS_EXTRACTION_TYPE;
+        messageType = CPTADSSConstants.TS_MESSAGE_TYPE;
     }
 }
