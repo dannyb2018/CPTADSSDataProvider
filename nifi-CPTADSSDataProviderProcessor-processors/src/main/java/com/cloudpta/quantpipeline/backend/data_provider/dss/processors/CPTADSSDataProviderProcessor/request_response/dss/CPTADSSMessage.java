@@ -75,17 +75,12 @@ public class CPTADSSMessage extends CPTARefinitivMessage
     {
         msgLogger.trace("getting session token, user=" + user + ", password=" + password);
         Client client = javax.ws.rs.client.ClientBuilder.newClient();            
-        String url = urlHost + "/Authentication/RequestToken";
+        String url = urlHost + CPTADSSConstants.GET_TOKEN_URL;
         WebTarget webTarget = client.target(url);
         Builder builder = webTarget.request(MediaType.APPLICATION_JSON);
         builder.header("content-type", "application/json; odata=minimalmetadata");
 
-        JsonObjectBuilder tokenRequestBuilder = Json.createObjectBuilder();
-        JsonObjectBuilder credentialsBuilder = Json.createObjectBuilder();
-        credentialsBuilder.add("Username", user);
-        credentialsBuilder.add("Password", password);
-        tokenRequestBuilder.add("Credentials", credentialsBuilder);
-        String tokenRequestAsString = tokenRequestBuilder.build().toString();
+        String tokenRequestAsString = getTokenRequest();
         msgLogger.trace("token request " + tokenRequestAsString);
         Response response = builder.post(Entity.json(tokenRequestAsString));
         // Let make sure the authentication is ok
@@ -99,8 +94,20 @@ public class CPTADSSMessage extends CPTARefinitivMessage
 
         JsonObject jsonResponse = Json.createReader(new StringReader(stringResponse)).readObject();
 
-        sessionToken = jsonResponse.getString("value");
+        sessionToken = jsonResponse.getString(CPTADSSConstants.SESSION_TOKEN_VALUE_FIELD);
         msgLogger.trace("token is " + sessionToken);
+    }
+    
+    protected String getTokenRequest()
+    {
+        JsonObjectBuilder tokenRequestBuilder = Json.createObjectBuilder();
+        JsonObjectBuilder credentialsBuilder = Json.createObjectBuilder();
+        credentialsBuilder.add(CPTADSSConstants.USER_NAME_FIELD, user);
+        credentialsBuilder.add(CPTADSSConstants.PASSWORD_FIELD, password);
+        tokenRequestBuilder.add(CPTADSSConstants.CREDENTIALS_FIELD, credentialsBuilder);
+        String tokenRequestAsString = tokenRequestBuilder.build().toString();
+
+        return tokenRequestAsString;
     }
     
     // BUGBUGDB set the timeout
@@ -117,7 +124,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         JsonArray result = null;
         msgLogger.trace("About to make request for data");
         Client client = javax.ws.rs.client.ClientBuilder.newClient();            
-        String url = urlHost + "/Extractions/ExtractWithNotes";
+        String url = urlHost + CPTADSSConstants.GET_DATA_URL;
         msgLogger.trace("url for requesting data " + url);
         WebTarget webTarget = client.target(url);
         Builder builder = webTarget.request(MediaType.APPLICATION_JSON);
