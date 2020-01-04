@@ -64,6 +64,11 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String FIELDS_ARRAY_NAME = "fields";
     public static final String PROPERTIES_ARRAY_NAME = "properties";
     
+    public static final String MESSAGE_TYPE_FIELD_NAME = "type";
+    public static final String FIELD_NAME_FIELD_NAME = "name";
+    public static final String PROPERTY_NAME_FIELD_NAME = "name";
+    public static final String PROPERTY_VALUE_FIELD_NAME = "value";
+
     public static final String RIC_FIELD_NAME = "RIC";
     public static final String DATE_FIELD_NAME = "DATE";
 }
