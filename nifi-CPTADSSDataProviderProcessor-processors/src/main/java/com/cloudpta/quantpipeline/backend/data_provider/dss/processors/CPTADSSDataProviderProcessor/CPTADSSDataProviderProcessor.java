@@ -19,9 +19,11 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
+import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSField;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivGetData;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -52,6 +54,7 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
+import javax.json.JsonString;
 import org.apache.nifi.logging.ComponentLog;
 
 @Tags({"DSS and Datastream data provider"})
@@ -178,7 +181,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     @OnScheduled
     public void onScheduled(final ProcessContext context) 
     {
-
+        
     }
 
     @Override
@@ -213,10 +216,8 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
 
             // Finally there is the properties array
             List<CPTADSSProperty> requestPropertiesArray = getRequestProperties(request);
-            // Feed that in to the dss api
-            JsonObject response = makeRequest(context, ricsArray, fieldsArray, requestPropertiesArray);
-            // Parse the result
-            results = getResults(response);
+            // Get data from refinitiv
+            results = getDataFromRefinitv(context, ricsArray, fieldsArray, requestPropertiesArray);
         }
         catch(Exception E)
         {
@@ -240,33 +241,74 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     
     protected List<CPTAInstrumentSymbology> getRics(JsonObject request)
     {
+        // Get the rics from the request, it is an array of json strings of the rics
         JsonArray ricsAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.RICS_ARRAY_NAME);  
-        // This is a list of 
-        return null;
+        // Convert this list of rics to a list of symbols with type as rics
+        List<CPTAInstrumentSymbology> rics = new ArrayList<>();
+        // Get the list so we iterate easily over it
+        List<JsonString> ricsAsJsonStrings = ricsAsArray.getValuesAs(JsonString.class);        
+        for(JsonString currentInstrumentRic: ricsAsJsonStrings)
+        {
+            // Create a symbology entry for this ric
+            CPTAInstrumentSymbology currentInstrumentSymbology = new CPTAInstrumentSymbology();
+            // It is always a ric
+            currentInstrumentSymbology.setIDSource(CPTAInstrumentConstants.ID_SOURCE_RIC);
+            // Add the actual ric
+            String ric = currentInstrumentRic.getString();
+            currentInstrumentSymbology.setID(ric);
+            // Add to list of instruments
+            rics.add(currentInstrumentSymbology);
+        }
+        
+        // Return the list
+        return rics;
     }
     
     protected List<CPTADSSField> getRequestFields(JsonObject request)
     {
+        // Get the fields from the request, it is an array of json objects representing the request fields
         JsonArray fieldsAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME);
-        return null;
+        // need to convert this from a json array of json objects to a list of fields
+        List<CPTADSSField> fields = new ArrayList<>();
+        // Get the json array as a list so we can iterate over it
+        List<JsonObject> fieldsAsJsonObjects = fieldsAsArray.getValuesAs(JsonObject.class);
+        for( JsonObject currentRequestFieldObject: fieldsAsJsonObjects)
+        {
+            // Turns the json object into a list of fields with name and message type
+            CPTADSSField currentField = new CPTADSSField();
+            currentField.messageType = currentRequestFieldObject.getString(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME);
+            currentField.name = currentRequestFieldObject.getString(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME);
+            // Add it to list
+            fields.add(currentField);
+        }
+        
+        return fields;
     }
     
     protected List<CPTADSSProperty> getRequestProperties(JsonObject request)
     {
+        // Get the properties from the request, it is an array of json objects representing the request fields
         JsonArray propertiesAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME);
-        return null;
+        // need to convert this from a json array of json objects to a list of properties
+        List<CPTADSSProperty> properties = new ArrayList<>();
+        // Get the json array as a list so we can iterate over it
+        List<JsonObject> propertiesAsJsonObjects = propertiesAsArray.getValuesAs(JsonObject.class);
+        for( JsonObject currentRequestPropertyObject: propertiesAsJsonObjects)
+        {
+            // Turns the json object into a list of properties with name and value
+            CPTADSSProperty currentProperty = new CPTADSSProperty();
+            currentProperty.name = currentRequestPropertyObject.getString(CPTADSSDataProviderProcessorConstants.PROPERTY_NAME_FIELD_NAME);
+            currentProperty.value = currentRequestPropertyObject.getString(CPTADSSDataProviderProcessorConstants.PROPERTY_VALUE_FIELD_NAME);
+            // Add it to list
+            properties.add(currentProperty);
+        }
+        
+        return properties;
     }
     
-    protected JsonObject makeRequest(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    protected String getDataFromRefinitv(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
     {
-        return null;
-    }
-    
-    protected String getResults(JsonObject response)
-    {
-        // Results are array of rics
-        // each ric has a list of fields
-        // Then there is an error with a list of rics
-        return null;
+        String result = CPTARefinitivGetData.getInstance().getData(log, context, symbols, fields, properties);
+        return result;
     }    
 }
