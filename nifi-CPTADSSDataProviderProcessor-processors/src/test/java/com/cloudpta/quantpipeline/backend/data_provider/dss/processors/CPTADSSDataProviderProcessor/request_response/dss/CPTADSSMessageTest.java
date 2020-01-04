@@ -19,6 +19,7 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss;
 
+import java.util.UUID;
 import javax.json.JsonArray;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.Response;
@@ -35,10 +36,16 @@ public class CPTADSSMessageTest
      * Test of getSessionToken method, of class CPTADSSMessage.
      */
     @Test
-    public void testGetSessionToken()
+    public void testGetTokenRequest()
     {
-        System.out.println("getSessionToken");
+        System.out.println("getTokenRequest");
         CPTADSSMessage instance = new CPTADSSMessage();
+        String user = UUID.randomUUID().toString();
+        String password = UUID.randomUUID().toString();
+        instance.user = user;
+        instance.password = password;
+        String tokenRequest = instance.getTokenRequest();
+        
     }
 
     /**
