@@ -20,6 +20,13 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response;
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSCompositeMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSCorporateActionsMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSEODMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSTimeSeriesMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSMessage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,27 +41,20 @@ import org.apache.nifi.processor.ProcessContext;
  */
 public class CPTARefinitivGetData
 {
-    public static JsonObject getData(ComponentLog logger, ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    public static CPTARefinitivGetData getInstance()
     {
-        HashMap<String,List<String>> mappedFields = new HashMap<>();
-        // for each type get the fields
-        // Loop through the fields
-        for( CPTADSSField field : fields)
+        if(null == dataGetterInstance)
         {
-            // Get the message type
-            String messageType = field.messageType;
-            // If it is not already in the map
-            List<String> fieldsForThisType = mappedFields.get(messageType);
-            if(null == fieldsForThisType)
-            {
-                // Add it
-                fieldsForThisType = new ArrayList<>();
-                mappedFields.put(messageType, fieldsForThisType);
-            }
-            
-            // Add the field
-            fieldsForThisType.add(field.name);
+            dataGetterInstance = new CPTARefinitivGetData();
         }
+        
+        return dataGetterInstance;
+    }
+    
+    public String getData(ComponentLog logger, ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    {
+        // Get the list of message types along with the fields for each message type
+        HashMap<String,List<String>> mappedFields = getMappedFields(fields);
         
         List<JsonObject> responses = new ArrayList<>();
         Set<String> messagesTypesToQuery = mappedFields.keySet();
@@ -87,23 +87,43 @@ public class CPTARefinitivGetData
         }
         
         // Turn reponses into a proper response
-        JsonObject globalResponse = createGlobalResponseFromList(responses);
+        String globalResponse = createGlobalResponseFromList(responses);
         return globalResponse;
     }
     
-    protected static CPTARefinitivMessage getMessageByType
-                                                         (
-                                                         String messageType
-                                                         ) throws InstantiationException, IllegalAccessException
+    protected HashMap<String,List<String>> getMappedFields(List<CPTADSSField> fields)
     {
-        // If the mapper is null
-        if( null == typeToMessageClassMap )
+        HashMap<String,List<String>> mappedFields = new HashMap<>();
+        // for each type get the fields
+        // Loop through the fields
+        for( CPTADSSField field : fields)
         {
-            // Create it
-            typeToMessageClassMap = new HashMap<>();
-            // populate it
+            // Get the message type
+            String messageType = field.messageType;
+            // If it is not already in the map
+            List<String> fieldsForThisType = mappedFields.get(messageType);
+            if(null == fieldsForThisType)
+            {
+                // Add it
+                fieldsForThisType = new ArrayList<>();
+                mappedFields.put(messageType, fieldsForThisType);
+            }
+            
+            // Add the field
+            fieldsForThisType.add(field.name);
         }
 
+        return mappedFields;
+    }
+    
+    protected CPTARefinitivMessage getMessageByType
+                                                  (
+                                                  String messageType
+                                                  ) 
+                                                  throws 
+                                                  InstantiationException, 
+                                                  IllegalAccessException
+    {
         // Get class
         Class messageClassForThisType = typeToMessageClassMap.get(messageType);
         // Create an instance of it
@@ -112,7 +132,7 @@ public class CPTARefinitivGetData
         return messageForThisType;
     }
                                                          
-    protected static JsonObject createGlobalResponseFromList(List<JsonObject> responsesFromEachMessage)
+    protected String createGlobalResponseFromList(List<JsonObject> responsesFromEachMessage)
     {
         
         return null;
@@ -120,8 +140,28 @@ public class CPTARefinitivGetData
     
     private CPTARefinitivGetData()
     {
-        // So we dont accidentally create this
+        // private so we dont accidentally create this externally
+        
+        // Set up the mapper
+        typeToMessageClassMap = new HashMap<>();
+        // Populate with types
+        // DSS End of day
+        Class eodDSSMesageClass = CPTADSSEODMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.EOD_MESSAGE_TYPE, eodDSSMesageClass);
+        // DSS Corporate actions
+        Class caDSSMesageClass = CPTADSSCorporateActionsMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.CA_MESSAGE_TYPE, caDSSMesageClass);
+        // DSS time series
+        Class tsDSSMesageClass = CPTADSSTimeSeriesMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.TS_MESSAGE_TYPE, tsDSSMesageClass);
+        // DSS composite
+        Class compositeDSSMesageClass = CPTADSSCompositeMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.COMPOSITE_MESSAGE_TYPE, compositeDSSMesageClass);
+        // DSWS 
+        Class dswsMesageClass = CPTADSWSMessage.class;
+        typeToMessageClassMap.put(CPTADSWSConstants.MESSAGE_TYPE, dswsMesageClass);
     }
     
-    static HashMap<String, Class> typeToMessageClassMap = null;
+    static CPTARefinitivGetData dataGetterInstance = null;
+    HashMap<String, Class> typeToMessageClassMap = null;
 }
