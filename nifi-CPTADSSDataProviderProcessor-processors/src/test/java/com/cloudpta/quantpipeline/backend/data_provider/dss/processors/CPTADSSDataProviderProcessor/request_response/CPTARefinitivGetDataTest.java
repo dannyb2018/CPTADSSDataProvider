@@ -19,7 +19,6 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response;
 
-import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSCompositeMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSCorporateActionsMessage;
@@ -30,6 +29,8 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import javax.json.JsonObject;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -84,15 +85,186 @@ public class CPTARefinitivGetDataTest
         assertTrue(result.isEmpty());
         
         // Make one of EOD message type
+        fields = new ArrayList<>();
+        CPTADSSField eodField1 = new CPTADSSField();
+        eodField1.messageType = CPTADSSConstants.EOD_MESSAGE_TYPE;
+        eodField1.name = UUID.randomUUID().toString();
+        fields.add(eodField1);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be just one message type
+        Set<String> messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 1);
+        // It should be EOD
+        assertTrue(messageTypes.contains(CPTADSSConstants.EOD_MESSAGE_TYPE));
+        // should have only one field
+        List<String> resultEODFields = result.get(CPTADSSConstants.EOD_MESSAGE_TYPE);
+        assertTrue(false == resultEODFields.isEmpty());
+        assertEquals(resultEODFields.size(), 1);
+        // its name should be what was set
+        String resultEODField1Name = resultEODFields.get(0);
+        assertEquals(resultEODField1Name, eodField1.name);
+        
         // Make one of the DSWS message type
+        fields = new ArrayList<>();
+        CPTADSSField dswsField1 = new CPTADSSField();
+        dswsField1.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField1.name = UUID.randomUUID().toString();
+        fields.add(dswsField1);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be just one message type
+        messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 1);
+        // It should be DSWS
+        assertTrue(messageTypes.contains(CPTADSWSConstants.MESSAGE_TYPE));
+        // should have only one field
+        List<String> resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        assertEquals(resultDSWSFields.size(), 1);
+        // its name should be what was set
+        String resultDSWSField1Name = resultDSWSFields.get(0);
+        assertEquals(resultDSWSField1Name, dswsField1.name);
         
         //  Make two of EOD message type
+        fields = new ArrayList<>();
+        eodField1 = new CPTADSSField();
+        eodField1.messageType = CPTADSSConstants.EOD_MESSAGE_TYPE;
+        eodField1.name = UUID.randomUUID().toString();
+        fields.add(eodField1);
+        CPTADSSField eodField2 = new CPTADSSField();
+        eodField2.messageType = CPTADSSConstants.EOD_MESSAGE_TYPE;
+        eodField2.name = UUID.randomUUID().toString();
+        fields.add(eodField2);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be just one message type
+        messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 1);
+        // It should be EOD
+        assertTrue(messageTypes.contains(CPTADSSConstants.EOD_MESSAGE_TYPE));
+        // should have two fields
+        resultEODFields = result.get(CPTADSSConstants.EOD_MESSAGE_TYPE);
+        assertTrue(false == resultEODFields.isEmpty());
+        assertEquals(resultEODFields.size(),2);
+        // its name should be what was set
+        resultEODField1Name = resultEODFields.get(0);
+        assertEquals(resultEODField1Name, eodField1.name);
+        String resultEODField2Name = resultEODFields.get(1);
+        assertEquals(resultEODField2Name, eodField2.name);
+
         // Make two of DSWS message type
+        fields = new ArrayList<>();
+        dswsField1 = new CPTADSSField();
+        dswsField1.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField1.name = UUID.randomUUID().toString();
+        fields.add(dswsField1);
+        CPTADSSField dswsField2 = new CPTADSSField();
+        dswsField2.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField2.name = UUID.randomUUID().toString();
+        fields.add(dswsField2);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be just one message type
+        messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 1);
+        // It should be DSWS
+        assertTrue(messageTypes.contains(CPTADSWSConstants.MESSAGE_TYPE));
+        // should have two fields
+        resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        assertEquals(resultDSWSFields.size(), 2);
+        // its name should be what was set
+        resultDSWSField1Name = resultDSWSFields.get(0);
+        assertEquals(resultDSWSField1Name, dswsField1.name);
+        String resultDSWSField2Name = resultDSWSFields.get(1);
+        assertEquals(resultDSWSField2Name, dswsField2.name);
         
         // Make one of the EOD message type and one of DSWS message type
+        fields = new ArrayList<>();
+        eodField1 = new CPTADSSField();
+        eodField1.messageType = CPTADSSConstants.EOD_MESSAGE_TYPE;
+        eodField1.name = UUID.randomUUID().toString();
+        fields.add(eodField1);
+        dswsField1 = new CPTADSSField();
+        dswsField1.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField1.name = UUID.randomUUID().toString();
+        fields.add(dswsField1);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be two message types
+        messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 2);
+        // Should include both dsws and dss eod
+        assertTrue(messageTypes.contains(CPTADSWSConstants.MESSAGE_TYPE));
+        assertTrue(messageTypes.contains(CPTADSSConstants.EOD_MESSAGE_TYPE));
+        resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        // Should be one dsws field
+        resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        assertEquals(resultDSWSFields.size(), 1);
+        resultDSWSField1Name = resultDSWSFields.get(0);
+        assertEquals(resultDSWSField1Name, dswsField1.name);
+        // Should be one dss eod field
+        resultEODFields = result.get(CPTADSSConstants.EOD_MESSAGE_TYPE);
+        assertTrue(false == resultEODFields.isEmpty());
+        assertEquals(resultEODFields.size(),1);
+        // its name should be what was set
+        resultEODField1Name = resultEODFields.get(0);
+        assertEquals(resultEODField1Name, eodField1.name);
         
         // Make one of the EOD message type and two of DSWS message type
-        // Make one of the DSWS message type and two of EOD message type
+        fields = new ArrayList<>();
+        eodField1 = new CPTADSSField();
+        eodField1.messageType = CPTADSSConstants.EOD_MESSAGE_TYPE;
+        eodField1.name = UUID.randomUUID().toString();
+        fields.add(eodField1);
+        dswsField1 = new CPTADSSField();
+        dswsField1.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField1.name = UUID.randomUUID().toString();
+        fields.add(dswsField1);
+        dswsField2 = new CPTADSSField();
+        dswsField2.messageType = CPTADSWSConstants.MESSAGE_TYPE;
+        dswsField2.name = UUID.randomUUID().toString();
+        fields.add(dswsField2);
+        result = instance.getMappedFields(fields);
+        // Shouldnt be empty
+        assertTrue( false == result.isEmpty());
+        // Should be two message types
+        messageTypes = result.keySet();
+        assertTrue(false == messageTypes.isEmpty());
+        assertEquals(messageTypes.size(), 2);
+        // Should include both dsws and dss eod
+        assertTrue(messageTypes.contains(CPTADSWSConstants.MESSAGE_TYPE));
+        assertTrue(messageTypes.contains(CPTADSSConstants.EOD_MESSAGE_TYPE));
+        resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        // Should be two dsws field
+        resultDSWSFields = result.get(CPTADSWSConstants.MESSAGE_TYPE);
+        assertTrue(false == resultDSWSFields.isEmpty());
+        assertEquals(resultDSWSFields.size(), 2);
+        resultDSWSField1Name = resultDSWSFields.get(0);
+        assertEquals(resultDSWSField1Name, dswsField1.name);
+        resultDSWSField2Name = resultDSWSFields.get(1);
+        assertEquals(resultDSWSField2Name, dswsField2.name);
+        // Should be one dss eod field
+        resultEODFields = result.get(CPTADSSConstants.EOD_MESSAGE_TYPE);
+        assertTrue(false == resultEODFields.isEmpty());
+        assertEquals(resultEODFields.size(),1);
+        // its name should be what was set
+        resultEODField1Name = resultEODFields.get(0);
+        assertEquals(resultEODField1Name, eodField1.name);        
     }
 
     /**
