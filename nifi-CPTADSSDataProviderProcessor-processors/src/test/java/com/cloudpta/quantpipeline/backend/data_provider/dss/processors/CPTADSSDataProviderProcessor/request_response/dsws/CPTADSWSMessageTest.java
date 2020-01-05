@@ -37,8 +37,12 @@ import javax.json.JsonObjectBuilder;
 import javax.json.JsonReader;
 import javax.json.JsonValue;
 import javax.json.JsonValue.ValueType;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -932,9 +936,9 @@ public class CPTADSWSMessageTest
         assertEquals(result.size(),1);
         JsonObject row1 = result.getJsonObject(0);
         assertNotNull(row1);
-        // Has ric, date, field = value
-        assertEquals(row1.size(),3);
-        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.RIC_FIELD_NAME),ric1);
+        // Has identifier, indentifier type, date, field = value
+        assertEquals(row1.size(),4);
+        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME),ric1);
         assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME),date1);
         assertEquals(row1.getString(field1), Double.toString(ric1Field1Value));
         
