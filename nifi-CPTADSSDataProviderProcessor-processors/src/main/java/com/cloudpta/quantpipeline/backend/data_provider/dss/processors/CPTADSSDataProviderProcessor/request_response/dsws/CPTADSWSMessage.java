@@ -465,8 +465,13 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                 {
                     // Create a row
                     rowForThisDate = Json.createObjectBuilder();
+                    // For consistency with DSS
+                    // Need identifier in this format
+                    // "IdentifierType":"Ric","Identifier":"2618.TW"
                     // Add the ric
-                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.RIC_FIELD_NAME, currentRic);
+                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, currentRic);
+                    // Add that the identifier is a RIC
+                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
                     // Add the date
                     rowForThisDate.add(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME, currentValue.date);
                     // Add to rows
