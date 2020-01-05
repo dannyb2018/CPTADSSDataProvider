@@ -19,6 +19,8 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
+import javax.json.JsonValue;
+
 /**
  *
  * @author Danny
@@ -48,7 +50,7 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_BASE_URL_PROPERTY_DEFAULT_VALUE = "http://product.datastream.com/DswsClient/V1/DSService.svc/rest";    
     
     public static final String CPTA_DATE_FORMAT = "yyyy-MM-dd";
-   public static final String CPTA_DATE_TIME_FORMAT = "yyyy-MM-dd";
+    public static final String CPTA_DATE_TIME_FORMAT = "yyyy-MM-dd";
 
     public static final String CPTA_START_DATE_PROPERTY = "start";
     public static final String CPTA_END_DATE_PROPERTY = "end";
@@ -69,6 +71,8 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String PROPERTY_NAME_FIELD_NAME = "name";
     public static final String PROPERTY_VALUE_FIELD_NAME = "value";
 
-    public static final String RIC_FIELD_NAME = "RIC";
-    public static final String DATE_FIELD_NAME = "DATE";
+    public static final String DATE_FIELD_NAME = "date";
+    public static final String IDENTIFIER_FIELD_NAME = "Identifier";
+    public static final String IDENTIFIER_TYPE_FIELD_NAME = "IdentifierType";
+    public static final String IDENTIFIER_TYPE_RIC = "Ric";
 }
