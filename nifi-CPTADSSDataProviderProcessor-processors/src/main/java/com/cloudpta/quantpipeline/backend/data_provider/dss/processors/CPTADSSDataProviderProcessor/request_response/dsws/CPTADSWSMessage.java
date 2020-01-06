@@ -53,20 +53,21 @@ import org.apache.nifi.processor.ProcessContext;
  */
 public class CPTADSWSMessage extends CPTARefinitivMessage
 {
+    @Override
     public String getMessageType()
     {
         return CPTADSWSConstants.MESSAGE_TYPE;
     }
     
     @Override
-    public JsonObject getResult
-                              (
-                              ComponentLog logger, 
-                              ProcessContext context, 
-                              List<CPTAInstrumentSymbology> symbols, 
-                              List<String> fields, 
-                              List<CPTADSSProperty> properties
-                              )
+    public JsonArray getResult
+                             (
+                             ComponentLog logger, 
+                             ProcessContext context, 
+                             List<CPTAInstrumentSymbology> symbols, 
+                             List<String> fields, 
+                             List<CPTADSSProperty> properties
+                             )
     {
         String userName = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY).getValue();
         String password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY).getValue();
@@ -113,7 +114,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         }
 
         // convert to a json object
-        JsonObject cptaResponseAsJson = cptaDataResponse.build().asJsonObject();
+        JsonArray cptaResponseAsJson = cptaDataResponse.build().asJsonArray();
         return cptaResponseAsJson;
     }
     
