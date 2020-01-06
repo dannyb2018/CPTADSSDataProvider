@@ -25,8 +25,6 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivGetData;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.flowfile.FlowFile;
 import org.apache.nifi.annotation.behavior.ReadsAttribute;
@@ -50,6 +48,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
@@ -134,13 +133,13 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     private Set<Relationship> relationships;
     private static final Relationship SUCCESS = new Relationship
     .Builder()
-    .name("Success")
+    .name(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS)
     .description("Got data from DSS/Datastream")
     .build();
     
     private static final Relationship FAILURE = new Relationship
     .Builder()
-    .name("FAILURE")
+    .name(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_FAILURE)
     .description("failed to get data from DSS/Datastream")
     .build();       
     
@@ -199,69 +198,106 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
             return;
         }
 
-        String results = null;
-        InputStream in = session.read(flowFile);
-        try
-        {
-            // Read in the json
-            JsonReader reader = Json.createReader(in);
-            JsonObject request = reader.readObject();
+        // Has to be like this so we can access from within a lambda
+        final AtomicReference<String> results = new AtomicReference<>();
+        session.read
+        (
+            flowFile, in ->
+            {
+                try
+                {
+                    // Read in the json
+                    JsonReader reader = Json.createReader(in);
+                    JsonObject request = reader.readObject();
 
-            // Format is rics, which is a simple array of sttring
-            final List<CPTAInstrumentSymbology> ricsArray = getRics(request);
+                    // Format is instruments, which is a simple array of json objects
+                    // with identifier and identifier type
+                    final List<CPTAInstrumentSymbology> instrumentsArray = getInstruments(request);
 
-            // Fields are array of field objects, 
-            // which are message type and field
-            List<CPTADSSField> fieldsArray = getRequestFields(request);
+                    // Fields are array of field objects, 
+                    // which are message type and field
+                    List<CPTADSSField> fieldsArray = getRequestFields(request);
 
-            // Finally there is the properties array
-            List<CPTADSSProperty> requestPropertiesArray = getRequestProperties(request);
-            // Get data from refinitiv
-            results = getDataFromRefinitv(context, ricsArray, fieldsArray, requestPropertiesArray);
-        }
-        catch(Exception E)
-        {
+                    // Finally there is the properties array
+                    List<CPTADSSProperty> requestPropertiesArray = getRequestProperties(request);
+                    // Get data from refinitiv
+                    String queryResults = getDataFromRefinitv(context, instrumentsArray, fieldsArray, requestPropertiesArray);
+                    results.set(queryResults);
+                }
+                catch(Exception E)
+                {
 
-        }
+                }
+                finally
+                {
+                    try
+                    {
+                        in.close();
+                    }
+                    catch(Exception E2)
+                    {
+
+                    }
+                }
+            }
+        );
 
         // Write the results back out to flow file
-        OutputStream out = session.write(flowFile);
-        try
-        {
-            out.write(results.getBytes());
-        }
-        catch(IOException E)
-        {
-            
-        }
+        session.write
+        (
+            flowFile, out ->
+            {
+                try
+                {
+                    String resultsOfQuery = results.get();
+                    out.write(resultsOfQuery.getBytes());
+                }
+                catch(IOException E)
+                {
+
+                }
+                finally
+                {
+                    try
+                    {
+                        out.close();
+                    }
+                    catch(Exception E2)
+                    {
+
+                    }
+                }
+            }
+        );
         
         session.transfer(flowFile, SUCCESS);
     }
     
     
-    protected List<CPTAInstrumentSymbology> getRics(JsonObject request)
+    protected List<CPTAInstrumentSymbology> getInstruments(JsonObject request)
     {
-        // Get the rics from the request, it is an array of json strings of the rics
-        JsonArray ricsAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.RICS_ARRAY_NAME);  
+        // Get the rics from the request, it is an array of json objects of instrument symbologies
+        JsonArray ricsAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME);  
         // Convert this list of rics to a list of symbols with type as rics
-        List<CPTAInstrumentSymbology> rics = new ArrayList<>();
+        List<CPTAInstrumentSymbology> instruments = new ArrayList<>();
         // Get the list so we iterate easily over it
-        List<JsonString> ricsAsJsonStrings = ricsAsArray.getValuesAs(JsonString.class);        
-        for(JsonString currentInstrumentRic: ricsAsJsonStrings)
+        List<JsonObject> instrumentsAsJsonObjects = ricsAsArray.getValuesAs(JsonObject.class);        
+        for(JsonObject currentInstrument: instrumentsAsJsonObjects)
         {
             // Create a symbology entry for this ric
             CPTAInstrumentSymbology currentInstrumentSymbology = new CPTAInstrumentSymbology();
-            // It is always a ric
-            currentInstrumentSymbology.setIDSource(CPTAInstrumentConstants.ID_SOURCE_RIC);
-            // Add the actual ric
-            String ric = currentInstrumentRic.getString();
-            currentInstrumentSymbology.setID(ric);
+            // get id
+            String id = currentInstrument.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME);            
+            currentInstrumentSymbology.setID(id);
+            // get id type
+            String idType = currentInstrument.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME);
+            currentInstrumentSymbology.setIDSource(idType);
             // Add to list of instruments
-            rics.add(currentInstrumentSymbology);
+            instruments.add(currentInstrumentSymbology);
         }
         
         // Return the list
-        return rics;
+        return instruments;
     }
     
     protected List<CPTADSSField> getRequestFields(JsonObject request)
