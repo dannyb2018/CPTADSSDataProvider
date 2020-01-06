@@ -200,6 +200,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
 
         // Has to be like this so we can access from within a lambda
         final AtomicReference<String> results = new AtomicReference<>();
+        // Has to be written like this otherwise will complain flow file isnt shut properly
         session.read
         (
             flowFile, in ->
@@ -243,6 +244,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
         );
 
         // Write the results back out to flow file
+        // Has to be written like this otherwise will complain flow file isnt shut properly
         session.write
         (
             flowFile, out ->
