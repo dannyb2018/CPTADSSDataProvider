@@ -49,22 +49,22 @@ import org.apache.nifi.processor.ProcessContext;
 public class CPTADSSMessage extends CPTARefinitivMessage
 {        
     @Override
-    public JsonObject getResult
-                              (
-                              ComponentLog logger,
-                              ProcessContext context, 
-                              List<CPTAInstrumentSymbology> symbols, 
-                              List<String> fields, 
-                              List<CPTADSSProperty> properties
-                              )
+    public JsonArray getResult
+                             (
+                             ComponentLog logger,
+                             ProcessContext context, 
+                             List<CPTAInstrumentSymbology> symbols, 
+                             List<String> fields, 
+                             List<CPTADSSProperty> properties
+                             )
     {
         msgLogger = logger;
         // Get username and password from context
         context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
         context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
         // Get the data
-        // Convert it to standardard format
-        return null;
+        JsonArray result = getData(30000);
+        return result;
     }
                               
     /**
@@ -146,7 +146,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         {
             msgLogger.trace("HTTP status: " + respStatusCode + " - A response is available now!" );
             msgLogger.trace("got data");
-            result = getResult(response);
+            result = parseResponse(response);
 
         }
         else if( 202 == respStatusCode )
@@ -191,7 +191,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
             if (respStatusCode == 200) 
             {
                 msgLogger.trace("got data");
-                result = getResult(response);
+                result = parseResponse(response);
             }                
         }
         else
@@ -310,7 +310,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         detailsSpecificToThisExtractionRequest.addNull("Condition");
     }
     
-    protected JsonArray getResult(Response response)
+    protected JsonArray parseResponse(Response response)
     {
         JsonObject responseContent = null;
     	String jsonAsString = response.readEntity(String.class);
