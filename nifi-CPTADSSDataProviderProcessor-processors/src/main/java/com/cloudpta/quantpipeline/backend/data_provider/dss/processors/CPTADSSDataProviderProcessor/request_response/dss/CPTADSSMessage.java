@@ -60,8 +60,8 @@ public class CPTADSSMessage extends CPTARefinitivMessage
     {
         msgLogger = logger;
         // Get username and password from context
-        context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
-        context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
+        user = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
+        password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
         // Get the data
         JsonArray result = getData(30000);
         return result;
