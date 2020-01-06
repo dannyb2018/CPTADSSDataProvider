@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import javax.json.JsonObject;
+import javax.json.JsonArray;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -300,10 +300,11 @@ public class CPTARefinitivGetDataTest
     public void testCreateGlobalResponseFromList()
     {
         System.out.println("createGlobalResponseFromList");
-        List<JsonObject> responsesFromEachMessage = null;
-        CPTARefinitivGetData instance = null;
+        List<JsonArray> responsesFromEachMessage = new ArrayList<>();
+        CPTARefinitivGetData instance = CPTARefinitivGetData.getInstance();
         String expResult = "";
-//        String result = instance.createGlobalResponseFromList(responsesFromEachMessage);
+        String result = instance.createGlobalResponseFromList(responsesFromEachMessage);
+        System.out.println(result);
     }
     
 }
