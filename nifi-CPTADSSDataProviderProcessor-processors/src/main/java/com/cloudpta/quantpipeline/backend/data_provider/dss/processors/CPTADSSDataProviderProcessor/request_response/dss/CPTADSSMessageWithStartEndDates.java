@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import javax.json.Json;
-import javax.json.JsonObject;
+import javax.json.JsonArray;
 import javax.json.JsonObjectBuilder;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
@@ -41,14 +41,14 @@ import org.apache.nifi.processor.ProcessContext;
 public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
 {
     @Override
-    public JsonObject getResult
-                              (
-                              ComponentLog logger, 
-                              ProcessContext context, 
-                              List<CPTAInstrumentSymbology> symbols, 
-                              List<String> fields, 
-                              List<CPTADSSProperty> properties
-                              )
+    public JsonArray getResult
+                             (
+                             ComponentLog logger, 
+                             ProcessContext context, 
+                             List<CPTAInstrumentSymbology> symbols, 
+                             List<String> fields, 
+                             List<CPTADSSProperty> properties
+                             )
     {
         // Defaults are unadjusted prices
         // set the start and end dates
