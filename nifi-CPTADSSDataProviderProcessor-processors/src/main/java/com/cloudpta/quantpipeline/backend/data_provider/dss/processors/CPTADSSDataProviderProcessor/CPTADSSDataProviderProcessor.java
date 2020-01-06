@@ -19,7 +19,6 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
-import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSField;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
@@ -53,7 +52,6 @@ import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
-import javax.json.JsonString;
 import org.apache.nifi.logging.ComponentLog;
 
 @Tags({"DSS and Datastream data provider"})
@@ -143,7 +141,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     .description("failed to get data from DSS/Datastream")
     .build();       
     
-    private ComponentLog log = this.getLogger();
+    //private ComponentLog log = this.getLogger();
 
     @Override
     protected void init(final ProcessorInitializationContext context) 
@@ -346,6 +344,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     
     protected String getDataFromRefinitv(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
     {
+        ComponentLog log = this.getLogger();
         String result = CPTARefinitivGetData.getInstance().getData(log, context, symbols, fields, properties);
         return result;
     }    
