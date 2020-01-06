@@ -19,11 +19,9 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss;
 
-import javax.json.JsonArray;
 import javax.json.JsonObjectBuilder;
 import javax.ws.rs.core.Response;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -39,7 +37,6 @@ public class CPTADSSEODMessageTest
     {
         System.out.println("getSessionToken");
         CPTADSSMessage instance = new CPTADSSMessage();
-        instance.getSessionToken();
     }
 
     /**
