@@ -31,7 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import javax.json.JsonObject;
+import javax.json.Json;
+import javax.json.JsonArrayBuilder;
+import javax.json.JsonArray;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 
@@ -56,7 +58,7 @@ public class CPTARefinitivGetData
         // Get the list of message types along with the fields for each message type
         HashMap<String,List<String>> mappedFields = getMappedFields(fields);
         
-        List<JsonObject> responses = new ArrayList<>();
+        List<JsonArray> responses = new ArrayList<>();
         Set<String> messagesTypesToQuery = mappedFields.keySet();
         // Go through the list of message types
         for(String currentMessageType : messagesTypesToQuery )
@@ -69,14 +71,14 @@ public class CPTARefinitivGetData
                 CPTARefinitivMessage message = getMessageByType(currentMessageType);
                 // For each message pass in the relevant request
                 // Get the data
-                JsonObject response = message.getResult
-                                                      (
-                                                      logger,
-                                                      context, 
-                                                      symbols, 
-                                                      fieldsForThisMessageType,
-                                                      properties
-                                                      );
+                JsonArray response = message.getResult
+                                                     (
+                                                     logger,
+                                                     context, 
+                                                     symbols, 
+                                                     fieldsForThisMessageType,
+                                                     properties
+                                                     );
                 // Add to list of responses
                 responses.add(response);
             }
@@ -132,10 +134,20 @@ public class CPTARefinitivGetData
         return messageForThisType;
     }
                                                          
-    protected String createGlobalResponseFromList(List<JsonObject> responsesFromEachMessage)
+    protected String createGlobalResponseFromList(List<JsonArray> responsesFromEachMessage)
     {
+        // Merge the json objects
+        // they are all just arrays so just add them to one big array
+        JsonArrayBuilder globalResponse = Json.createArrayBuilder();
+        for( JsonArray currentResponse: responsesFromEachMessage)
+        {
+            globalResponse.add(currentResponse);
+        }
         
-        return null;
+        // Turn it into a string
+        String globalResponseAsString = globalResponse.build().toString();
+        // Return that string        
+        return globalResponseAsString;
     }
     
     private CPTARefinitivGetData()
