@@ -21,7 +21,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import java.util.List;
-import javax.json.JsonObject;
+import javax.json.JsonArray;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
 
@@ -31,14 +31,14 @@ import org.apache.nifi.processor.ProcessContext;
  */
 public abstract class CPTARefinitivMessage
 {
-    public abstract JsonObject getResult
-                                       (
-                                       ComponentLog logger,
-                                       ProcessContext context,        
-                                       List<CPTAInstrumentSymbology> symbols, 
-                                       List<String> fields, 
-                                       List<CPTADSSProperty> properties
-                                       );
+    public abstract JsonArray getResult
+                                      (
+                                      ComponentLog logger,
+                                      ProcessContext context,        
+                                      List<CPTAInstrumentSymbology> symbols, 
+                                      List<String> fields, 
+                                      List<CPTADSSProperty> properties
+                                      );
                                        
     public abstract String getMessageType();
 }
