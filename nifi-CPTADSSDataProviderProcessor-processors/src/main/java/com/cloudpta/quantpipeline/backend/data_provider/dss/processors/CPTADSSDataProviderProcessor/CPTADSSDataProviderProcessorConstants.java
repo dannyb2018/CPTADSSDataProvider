@@ -19,8 +19,6 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
-import javax.json.JsonValue;
-
 /**
  *
  * @author Danny
@@ -47,7 +45,10 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_BASE_URL_PROPERTY = "DSWS_BASE_URL";    
     public static final String DSWS_BASE_URL_PROPERTY_DISPLAY = "Datascope Base Url";    
     public static final String DSWS_BASE_URL_PROPERTY_DESCRIPTION = "Base Url for all Datascope requests";    
-    public static final String DSWS_BASE_URL_PROPERTY_DEFAULT_VALUE = "http://product.datastream.com/DswsClient/V1/DSService.svc/rest";    
+    public static final String DSWS_BASE_URL_PROPERTY_DEFAULT_VALUE = "http://product.datastream.com/DswsClient/V1/DSService.svc/rest";   
+    
+    public static final String RELATIONSHIP_NAME_SUCCESS = "Success";
+    public static final String RELATIONSHIP_NAME_FAILURE = "Failure";
     
     public static final String CPTA_DATE_FORMAT = "yyyy-MM-dd";
     public static final String CPTA_DATE_TIME_FORMAT = "yyyy-MM-dd";
@@ -62,7 +63,7 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String CPTA_OFFSET_PROPERTY_MONTHLY = "M";        
     public static final String CPTA_OFFSET_PROPERTY_YEARLY = "Y";        
     
-    public static final String RICS_ARRAY_NAME = "rics";
+    public static final String INSTRUMENTS_ARRAY_NAME = "instruments";
     public static final String FIELDS_ARRAY_NAME = "fields";
     public static final String PROPERTIES_ARRAY_NAME = "properties";
     
