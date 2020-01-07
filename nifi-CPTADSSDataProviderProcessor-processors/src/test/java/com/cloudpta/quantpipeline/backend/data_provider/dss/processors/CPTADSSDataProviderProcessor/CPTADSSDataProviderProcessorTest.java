@@ -76,9 +76,37 @@ public class CPTADSSDataProviderProcessorTest
     public void testProcessorWithWrongUserNamePassword() 
     {        
         // Mock the input file
-        // If it is empty then it needs to have rics, fields and properties all empty
-        String emptyRequestString = "{\""+ CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME + "\":[{\"" + CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME + "\": \"2618.TW\", \"" + CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME + "\": \"" + CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC + "\"}], \""+ CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME + "\":[], \""+ CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME + "\":[]}";
-        InputStream content = new ByteArrayInputStream(emptyRequestString.getBytes());
+        // Add two instruments
+        String ric1 = "2618.TW";
+        String ric2 = "MSFT.OQ";
+        String field1Name = "Open Price";
+        // Mock the input file
+        // Build the instruments array
+        JsonObjectBuilder instrument1 = Json.createObjectBuilder();
+        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric1);
+        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        JsonObjectBuilder instrument2 = Json.createObjectBuilder();
+        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric2);
+        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        JsonArrayBuilder instruments = Json.createArrayBuilder();
+        instruments.add(instrument1);
+        instruments.add(instrument2);
+        // Now add field
+        JsonObjectBuilder field1 = Json.createObjectBuilder();
+        field1.add(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME, field1Name);
+        field1.add(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
+        JsonArrayBuilder fields = Json.createArrayBuilder();
+        fields.add(field1);
+        // Empty properties array
+        JsonArrayBuilder emptyPropertiesArray = Json.createArrayBuilder();
+        // Add to the request
+        JsonObjectBuilder request = Json.createObjectBuilder();
+        request.add(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME, instruments);
+        request.add(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME, fields);
+        request.add(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
+        
+        String requestString = request.build().toString();
+        InputStream content = new ByteArrayInputStream(requestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
         TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
@@ -179,9 +207,39 @@ public class CPTADSSDataProviderProcessorTest
     public void testProcessorWithTwoRequestForDSSFlowFile() 
     {
  
+ 
         // Mock the input file
-        // If it is empty then it needs to have
-        InputStream content = new ByteArrayInputStream("{\"hello\":\"nifi rocks\"}".getBytes());
+        // Add two instruments
+        String ric1 = "2618.TW";
+        String ric2 = "MSFT.OQ";
+        String field1Name = "Open Price";
+        // Mock the input file
+        // Build the instruments array
+        JsonObjectBuilder instrument1 = Json.createObjectBuilder();
+        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric1);
+        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        JsonObjectBuilder instrument2 = Json.createObjectBuilder();
+        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric2);
+        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        JsonArrayBuilder instruments = Json.createArrayBuilder();
+        instruments.add(instrument1);
+        instruments.add(instrument2);
+        // Now add field
+        JsonObjectBuilder field1 = Json.createObjectBuilder();
+        field1.add(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME, field1Name);
+        field1.add(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
+        JsonArrayBuilder fields = Json.createArrayBuilder();
+        fields.add(field1);
+        // Empty properties array
+        JsonArrayBuilder emptyPropertiesArray = Json.createArrayBuilder();
+        // Add to the request
+        JsonObjectBuilder request = Json.createObjectBuilder();
+        request.add(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME, instruments);
+        request.add(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME, fields);
+        request.add(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
+        
+        String requestString = request.build().toString();
+        InputStream content = new ByteArrayInputStream(requestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
         TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
@@ -191,6 +249,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY, DSWS_USER_NAME);
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY, DSS_PASSWORD);
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY, DSWS_PASSWORD);
+
 
         // Add the content to the runner
         runner.enqueue(content);
