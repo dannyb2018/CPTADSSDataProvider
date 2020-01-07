@@ -24,6 +24,7 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
+import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -67,7 +68,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
                              List<CPTADSSProperty> properties
-                             )
+                             ) throws CPTAException
     {
         String userName = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY).getValue();
         String password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY).getValue();
