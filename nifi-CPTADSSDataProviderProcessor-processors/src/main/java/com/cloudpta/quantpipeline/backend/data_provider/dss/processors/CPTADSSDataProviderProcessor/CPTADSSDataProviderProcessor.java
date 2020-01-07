@@ -199,6 +199,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
 
         // Has to be like this so we can access from within a lambda
         final AtomicReference<String> results = new AtomicReference<>();
+        final AtomicReference<Relationship> statusOfQuery = new AtomicReference<>();
         // Has to be written like this otherwise will complain flow file isnt shut properly
         session.read
         (
@@ -223,14 +224,22 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
                     // Get data from refinitiv
                     String queryResults = getDataFromRefinitv(context, instrumentsArray, fieldsArray, requestPropertiesArray);
                     results.set(queryResults);
+                    statusOfQuery.set(SUCCESS);
                 }
                 catch(CPTAException internalException)
                 {
-                    
+                    // Then there is an error
+                    String error = internalException.getErrorsAsString();
+                    results.set(error);
+                    statusOfQuery.set(FAILURE);
                 }
-                catch(Exception E)
+                catch(Exception unexpectedException)
                 {
-
+                    // There is another sort of error
+                    CPTAException convertedException = new CPTAException(unexpectedException);
+                    String error = convertedException.getErrorsAsString();
+                    results.set(error);
+                    statusOfQuery.set(FAILURE);                    
                 }
                 finally
                 {
@@ -274,8 +283,9 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
                 }
             }
         );
-        
-        session.transfer(flowFile, SUCCESS);
+
+        // pass on the flow file along with whether the query succeeded or not
+        session.transfer(flowFile, statusOfQuery.get());
     }
     
     
