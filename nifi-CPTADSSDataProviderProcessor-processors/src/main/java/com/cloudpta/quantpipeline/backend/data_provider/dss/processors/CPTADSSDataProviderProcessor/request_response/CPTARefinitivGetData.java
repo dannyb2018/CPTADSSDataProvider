@@ -27,6 +27,7 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSTimeSeriesMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSMessage;
+import com.cloudpta.utilites.exceptions.CPTAException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ public class CPTARefinitivGetData
         return dataGetterInstance;
     }
     
-    public String getData(ComponentLog logger, ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    public String getData(ComponentLog logger, ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties) throws CPTAException
     {
         // Get the list of message types along with the fields for each message type
         HashMap<String,List<String>> mappedFields = getMappedFields(fields);
@@ -81,10 +82,16 @@ public class CPTARefinitivGetData
                                                      );
                 // Add to list of responses
                 responses.add(response);
+            } 
+            catch(CPTAException internalException)
+            {
+                // rethrow it
+                throw internalException;
             }
             catch(Exception E)
             {
                 // Think what to do here
+                E.printStackTrace();
             }
         }
         
