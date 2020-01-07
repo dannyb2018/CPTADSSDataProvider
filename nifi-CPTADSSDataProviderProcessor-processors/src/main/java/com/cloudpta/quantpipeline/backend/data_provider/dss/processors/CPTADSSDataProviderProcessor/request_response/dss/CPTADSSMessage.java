@@ -23,6 +23,7 @@ import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbolo
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
+import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -56,12 +57,18 @@ public class CPTADSSMessage extends CPTARefinitivMessage
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
                              List<CPTADSSProperty> properties
-                             )
+                             ) throws CPTAException
     {
         msgLogger = logger;
         // Get username and password from context
         user = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY).getValue();
         password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY).getValue();
+        
+        // Save the fields
+        this.fields = fields;
+        // Save the instruments
+        this.instrumentList = symbols;
+        
         // Get the data
         JsonArray result = getData(30000);
         return result;
@@ -71,7 +78,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
      * Request DSS2 for a Session Token (24 hour life)
      * 
      */
-    protected void getSessionToken() 
+    protected void getSessionToken() throws CPTAException
     {
         msgLogger.trace("getting session token, user=" + user + ", password=" + password);
         Client client = javax.ws.rs.client.ClientBuilder.newClient();            
@@ -98,7 +105,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         msgLogger.trace("token is " + sessionToken);
     }
     
-    protected String getTokenRequest()
+    protected String getTokenRequest() throws CPTAException
     {
         JsonObjectBuilder tokenRequestBuilder = Json.createObjectBuilder();
         JsonObjectBuilder credentialsBuilder = Json.createObjectBuilder();
@@ -111,7 +118,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
     }
     
     // BUGBUGDB set the timeout
-    public JsonArray getData(long timeout)
+    public JsonArray getData(long timeout) throws CPTAException
     {
         msgLogger.trace("getting data");
         // Get session token first, if dont have it
@@ -204,7 +211,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         return result;
     }
     
-    protected void handleError(Response response)
+    protected void handleError(Response response) throws CPTAException
     {
         msgLogger.trace("Got an error");
         // Get the response code
@@ -250,6 +257,8 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         ArrayList<String> errors = new ArrayList<>();
         errors.add(errorMessage);
         msgLogger.trace("throwing exception");
+        CPTAException exceptionForTheseErrors = new CPTAException(errors);
+        throw exceptionForTheseErrors;
     }
     
     protected String buildExtractionRequest()
@@ -300,7 +309,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
 
         msgLogger.trace("extraction JSON request content:"+ extractionRequest.toString() +"");
         
-        return extractionRequest.toString();
+        return extractionRequest.build().toString();
     }
     
     
