@@ -23,6 +23,7 @@ import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbolo
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSField;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivGetData;
+import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.IOException;
 import org.apache.nifi.components.PropertyDescriptor;
 import org.apache.nifi.flowfile.FlowFile;
@@ -223,6 +224,10 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
                     String queryResults = getDataFromRefinitv(context, instrumentsArray, fieldsArray, requestPropertiesArray);
                     results.set(queryResults);
                 }
+                catch(CPTAException internalException)
+                {
+                    
+                }
                 catch(Exception E)
                 {
 
@@ -342,7 +347,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
         return properties;
     }
     
-    protected String getDataFromRefinitv(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties)
+    protected String getDataFromRefinitv(ProcessContext context, List<CPTAInstrumentSymbology> symbols, List<CPTADSSField> fields, List<CPTADSSProperty> properties) throws CPTAException
     {
         ComponentLog log = this.getLogger();
         String result = CPTARefinitivGetData.getInstance().getData(log, context, symbols, fields, properties);
