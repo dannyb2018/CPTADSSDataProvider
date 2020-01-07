@@ -28,7 +28,7 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSS_USER_NAME_PROPERTY = "DSS_USER_NAME";
     public static final String DSS_USER_NAME_PROPERTY_DISPLAY = "DSS User Name";
     public static final String DSS_USER_NAME_PROPERTY_DESCRIPTION = "User name for Refinitiv DSS";
-    public static final String DSS_PASSWORD_PROPERTY = "";
+    public static final String DSS_PASSWORD_PROPERTY = "DSS_PASSWORD";
     public static final String DSS_PASSWORD_PROPERTY_DISPLAY = "DSS Password";
     public static final String DSS_PASSWORD_PROPERTY_DESCRIPTION = "Password for Refinitiv DSS";
     public static final String DSS_BASE_URL_PROPERTY = "";    
@@ -39,7 +39,7 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_USER_NAME_PROPERTY = "DWS_USER_NAME";
     public static final String DSWS_USER_NAME_PROPERTY_DISPLAY = "Datascope User Name";
     public static final String DSWS_USER_NAME_PROPERTY_DESCRIPTION = "User name for Refinitiv Datascope";
-    public static final String DSWS_PASSWORD_PROPERTY = "";
+    public static final String DSWS_PASSWORD_PROPERTY = "DWS_PASSWORD";
     public static final String DSWS_PASSWORD_PROPERTY_DISPLAY = "Datascope Password";
     public static final String DSWS_PASSWORD_PROPERTY_DESCRIPTION = "Password for Refinitiv Datascope";
     public static final String DSWS_BASE_URL_PROPERTY = "DSWS_BASE_URL";    
