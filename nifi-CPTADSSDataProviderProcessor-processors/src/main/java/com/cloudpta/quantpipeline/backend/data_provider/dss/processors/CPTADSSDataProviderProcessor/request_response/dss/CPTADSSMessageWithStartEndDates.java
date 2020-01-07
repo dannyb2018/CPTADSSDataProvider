@@ -22,6 +22,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
+import com.cloudpta.utilites.exceptions.CPTAException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -48,7 +49,7 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
                              List<CPTADSSProperty> properties
-                             )
+                             ) throws CPTAException
     {
         // Defaults are unadjusted prices
         // set the start and end dates
