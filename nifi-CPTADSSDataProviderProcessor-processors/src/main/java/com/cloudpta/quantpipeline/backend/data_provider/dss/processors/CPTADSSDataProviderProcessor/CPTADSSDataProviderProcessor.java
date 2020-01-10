@@ -19,6 +19,7 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
+import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSField;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
@@ -191,6 +192,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     @Override
     public void onTrigger(final ProcessContext context, final ProcessSession session) throws ProcessException 
     {
+        // Always needs an incoming flow file
         FlowFile flowFile = session.get();
         if ( flowFile == null ) 
         {
@@ -291,6 +293,7 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
     
     protected List<CPTAInstrumentSymbology> getInstruments(JsonObject request)
     {
+        // Should check that the json is properly formed at each stage otherwise throw an exception
         // Get the rics from the request, it is an array of json objects of instrument symbologies
         JsonArray ricsAsArray = request.getJsonArray(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME);  
         // Convert this list of rics to a list of symbols with type as rics
@@ -302,10 +305,10 @@ public class CPTADSSDataProviderProcessor extends AbstractProcessor
             // Create a symbology entry for this ric
             CPTAInstrumentSymbology currentInstrumentSymbology = new CPTAInstrumentSymbology();
             // get id
-            String id = currentInstrument.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME);            
+            String id = currentInstrument.getString(CPTAInstrumentConstants.ID_FIELD_NAME);            
             currentInstrumentSymbology.setID(id);
             // get id type
-            String idType = currentInstrument.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME);
+            String idType = currentInstrument.getString(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME);
             currentInstrumentSymbology.setIDSource(idType);
             // Add to list of instruments
             instruments.add(currentInstrumentSymbology);
