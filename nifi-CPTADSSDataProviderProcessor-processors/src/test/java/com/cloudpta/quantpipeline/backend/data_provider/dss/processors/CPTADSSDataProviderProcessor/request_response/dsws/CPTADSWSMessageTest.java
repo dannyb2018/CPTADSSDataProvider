@@ -19,9 +19,11 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
+import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
+import com.cloudpta.utilites.CPTAUtilityConstants;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -545,7 +547,7 @@ public class CPTADSWSMessageTest
         // \/Date(1574985600000+0000)\/
         System.out.println("getDataResultDates");
 
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
         
         // Build basic response
         JsonArrayBuilder jsonDateArray = Json.createArrayBuilder();
@@ -589,7 +591,7 @@ public class CPTADSWSMessageTest
         System.out.println("getResultsByRic");
 
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
         String nowDate = simpleDateFormat.format(now.getTime());
         
         // Start by handling a empty result
@@ -915,7 +917,7 @@ public class CPTADSWSMessageTest
         String field1 = UUID.randomUUID().toString();
         double ric1Field1Value = Math.random();
         Calendar now = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
         String date1 = simpleDateFormat.format(now.getTime());
         resultsByRic = new HashMap<>(); 
         CPTAFieldValue value1 = new CPTAFieldValue();
@@ -938,8 +940,8 @@ public class CPTADSWSMessageTest
         assertNotNull(row1);
         // Has identifier, indentifier type, date, field = value
         assertEquals(row1.size(),4);
-        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME),ric1);
-        assertEquals(row1.getString(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME),date1);
+        assertEquals(row1.getString(CPTAInstrumentConstants.ID_FIELD_NAME),ric1);
+        assertEquals(row1.getString(CPTAUtilityConstants.DATE_FIELD_NAME),date1);
         assertEquals(row1.getString(field1), Double.toString(ric1Field1Value));
         
         // one ric two dates, one field
