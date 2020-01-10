@@ -22,6 +22,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
+import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -101,7 +102,7 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
     protected String convertCalendarToString(Calendar calendarToConvert)
     {
         Date d = calendarToConvert.getTime();
-        DateFormat df = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_TIME_FORMAT);
+        DateFormat df = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_TIME_FORMAT);
         String dateAsString = df.format(d) + "Z";   
         
         return dateAsString;
@@ -113,15 +114,15 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
         // Default is day of year
         int offsetType = Calendar.DAY_OF_YEAR;
         // Last character is the offset amount ie days, weeks, months, years
-        if(true == propertyValue.endsWith(CPTADSSDataProviderProcessorConstants.CPTA_OFFSET_PROPERTY_WEEKLY))
+        if(true == propertyValue.endsWith(CPTAUtilityConstants.CPTA_OFFSET_PROPERTY_WEEKLY))
         {
             offsetType = Calendar.WEEK_OF_YEAR;
         }
-        else if(true == propertyValue.endsWith(CPTADSSDataProviderProcessorConstants.CPTA_OFFSET_PROPERTY_MONTHLY))
+        else if(true == propertyValue.endsWith(CPTAUtilityConstants.CPTA_OFFSET_PROPERTY_MONTHLY))
         {
             offsetType = Calendar.MONTH;
         }
-        else if(true == propertyValue.endsWith(CPTADSSDataProviderProcessorConstants.CPTA_OFFSET_PROPERTY_YEARLY))
+        else if(true == propertyValue.endsWith(CPTAUtilityConstants.CPTA_OFFSET_PROPERTY_YEARLY))
         {
             offsetType = Calendar.YEAR;
         }
