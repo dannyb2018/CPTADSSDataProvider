@@ -19,6 +19,7 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
+import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSConstants;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -35,6 +36,12 @@ import org.junit.Test;
 
 public class CPTADSSDataProviderProcessorTest 
 {
+    // These need to be changed first to run this test
+    static String DSS_USER_NAME = "CHANGE_THIS_TO_YOUR_DSS_USER_NAME";
+    static String DSS_PASSWORD = "CHANGE_THIS_TO_YOUR_DSS_PASSWORD";
+    static String DSWS_USER_NAME = "CHANGE_THIS_TO_YOUR_DSWS_USER_NAME";
+    static String DSWS_PASSWORD = "CHANGE_THIS_TO_YOUR_DSWS_PASSWORD";
+    
     @Test
     public void testProcessorWithEmptyFlowFile() 
     {        
@@ -83,11 +90,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric1);
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric2);
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -149,11 +156,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric1);
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric2);
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -216,11 +223,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric1);
-        instrument1.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, ric2);
-        instrument2.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -306,10 +313,5 @@ public class CPTADSSDataProviderProcessorTest
         // Test attributes and content
 //        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
         result.assertContentEquals("nifi rocks");       
-    }
-    
-    static String DSS_USER_NAME = "CHANGE_THIS_TO_YOUR_DSS_USER_NAME";
-    static String DSS_PASSWORD = "CHANGE_THIS_TO_YOUR_DSS_PASSWORD";
-    static String DSWS_USER_NAME = "CHANGE_THIS_TO_YOUR_DSWS_USER_NAME";
-    static String DSWS_PASSWORD = "CHANGE_THIS_TO_YOUR_DSWS_PASSWORD";
+    }    
 }
