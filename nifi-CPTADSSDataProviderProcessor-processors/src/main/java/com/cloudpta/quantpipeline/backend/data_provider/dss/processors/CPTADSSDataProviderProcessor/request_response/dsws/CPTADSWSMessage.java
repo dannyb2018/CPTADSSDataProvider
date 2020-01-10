@@ -1,4 +1,4 @@
-/*
+/*  
 
 Copyright 2017-2019 Advanced Products Limited, 
 dannyb@cloudpta.com
@@ -19,11 +19,13 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
+import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
+import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -148,8 +150,8 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                String authorisationToken, 
                                String symbolList, 
                                List<String> fields, 
-                               List<CPTADSSProperty> properties
-                               )
+                                    List<CPTADSSProperty> properties
+                               ) throws CPTAException
     {        
         // Get the data request string
         String dataRequestAsString = buildDataRequest
@@ -471,11 +473,11 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     // Need identifier in this format
                     // "IdentifierType":"Ric","Identifier":"2618.TW"
                     // Add the ric
-                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_FIELD_NAME, currentRic);
+                    rowForThisDate.add(CPTAInstrumentConstants.ID_FIELD_NAME, currentRic);
                     // Add that the identifier is a RIC
-                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_FIELD_NAME, CPTADSSDataProviderProcessorConstants.IDENTIFIER_TYPE_RIC);
+                    rowForThisDate.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
                     // Add the date
-                    rowForThisDate.add(CPTADSSDataProviderProcessorConstants.DATE_FIELD_NAME, currentValue.date);
+                    rowForThisDate.add(CPTAUtilityConstants.DATE_FIELD_NAME, currentValue.date);
                     // Add to rows
                     rowsForThisRic.put(currentValue.date, rowForThisDate);
                 }
@@ -495,7 +497,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     protected List<String> getDataResultDates(JsonObject dataResponseObject)
     {
         JsonArray dates = dataResponseObject.getJsonArray(CPTADSWSConstants.DATES_FIELD);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTADSSDataProviderProcessorConstants.CPTA_DATE_FORMAT);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
         ArrayList<String> datesAsString = new ArrayList<>();
         
         // Go through each of the dates to convert it to a date string
