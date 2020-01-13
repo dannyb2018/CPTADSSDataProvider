@@ -22,6 +22,8 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
+import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.text.DateFormat;
@@ -49,7 +51,7 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
                              ProcessContext context, 
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
-                             List<CPTADSSProperty> properties
+                             List<CPTADataProperty> properties
                              ) throws CPTAException
     {
         // Defaults are unadjusted prices
@@ -62,20 +64,20 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
         startDate.add(Calendar.DAY_OF_YEAR, -1);
         
         // Go through the properties to see if any get overriden
-        for(CPTADSSProperty currentProperty: properties)
+        for(CPTADataProperty currentProperty: properties)
         {
             // If it is the end date
-            if(0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_END_DATE_PROPERTY))
+            if(0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_END_DATE_PROPERTY))
             {
                 endDate = convertPropertyOffsetToCalendar(currentProperty.value);
             }
             // If it is the start date
-            else if(0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY))
+            else if(0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY))
             {
                 startDate = convertPropertyOffsetToCalendar(currentProperty.value);                
             }
             // If it is about adjusted prices
-            else if(0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_ADJUST_PRICES_PROPERTY))
+            else if(0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_ADJUST_PRICES_PROPERTY))
             {
                 shouldGetAdjustedPrices = true;
             }
