@@ -46,23 +46,4 @@ public interface CPTADSSDataProviderProcessorConstants
     public static final String DSWS_BASE_URL_PROPERTY_DISPLAY = "Datascope Base Url";    
     public static final String DSWS_BASE_URL_PROPERTY_DESCRIPTION = "Base Url for all Datascope requests";    
     public static final String DSWS_BASE_URL_PROPERTY_DEFAULT_VALUE = "http://product.datastream.com/DswsClient/V1/DSService.svc/rest";   
-    
-    public static final String RELATIONSHIP_NAME_SUCCESS = "Success";
-    public static final String RELATIONSHIP_NAME_FAILURE = "Failure";
-    
-
-    public static final String CPTA_START_DATE_PROPERTY = "start";
-    public static final String CPTA_END_DATE_PROPERTY = "end";
-    public static final String CPTA_FREQUENCY_PROPERTY = "frequency";
-    public static final String CPTA_ADJUST_PRICES_PROPERTY = "adjust_prices";
-    
-    public static final String INSTRUMENTS_ARRAY_NAME = "instruments";
-    public static final String FIELDS_ARRAY_NAME = "fields";
-    public static final String PROPERTIES_ARRAY_NAME = "properties";
-    
-    public static final String MESSAGE_TYPE_FIELD_NAME = "type";
-    public static final String FIELD_NAME_FIELD_NAME = "name";
-    public static final String PROPERTY_NAME_FIELD_NAME = "name";
-    public static final String PROPERTY_VALUE_FIELD_NAME = "value";
-
 }
