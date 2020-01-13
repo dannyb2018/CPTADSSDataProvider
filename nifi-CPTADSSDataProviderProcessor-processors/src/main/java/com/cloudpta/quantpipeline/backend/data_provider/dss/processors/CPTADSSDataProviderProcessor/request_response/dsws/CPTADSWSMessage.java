@@ -22,9 +22,10 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
@@ -69,7 +70,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                              ProcessContext context, 
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
-                             List<CPTADSSProperty> properties
+                             List<CPTADataProperty> properties
                              ) throws CPTAException
     {
         String userName = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY).getValue();
@@ -150,7 +151,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                String authorisationToken, 
                                String symbolList, 
                                List<String> fields, 
-                                    List<CPTADSSProperty> properties
+                               List<CPTADataProperty> properties
                                ) throws CPTAException
     {        
         // Get the data request string
@@ -206,7 +207,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                     String authorisationToken, 
                                     String symbolList, 
                                     List<String> fields, 
-                                    List<CPTADSSProperty> properties
+                                    List<CPTADataProperty> properties
                                     )
     {
         JsonObjectBuilder dataRequestBuilder  = Json.createObjectBuilder();
@@ -266,7 +267,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                                    (
                                                    String symbolList, 
                                                    List<String> fields, 
-                                                   List<CPTADSSProperty> properties
+                                                   List<CPTADataProperty> properties
                                                    )
     {
         JsonObjectBuilder dataRequestObjectBuilder  = Json.createObjectBuilder();
@@ -328,7 +329,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return fieldsArrayBuilder;
     }
     
-    protected JsonObjectBuilder getDateObjectBuilder(List<CPTADSSProperty> properties)
+    protected JsonObjectBuilder getDateObjectBuilder(List<CPTADataProperty> properties)
     {
         // BUGBUGDB should probably do some error checking to ensure the properties 
         // are correct format and values
@@ -352,22 +353,22 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, CPTADSWSConstants.START_DATE_PROPERTY_DEFAULT);
         
         // Loop through properties
-        for(CPTADSSProperty currentProperty : properties )
+        for(CPTADataProperty currentProperty : properties )
         {
             // If it is frequency
-            if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY))
+            if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_FREQUENCY_PROPERTY))
             {
                 // Add Frequency
                 dateObjectBuilder.add(CPTADSWSConstants.FREQUENCY_FIELD, currentProperty.value);
             }
             // If it is end offset
-            else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_END_DATE_PROPERTY))
+            else if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_END_DATE_PROPERTY))
             {
                 // Add End
                 dateObjectBuilder.add(CPTADSWSConstants.END_OFFSET_FIELD, currentProperty.value);
             }
             // If it is start offset
-            else if( 0 == currentProperty.name.compareTo(CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY))
+            else if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY))
             {
                 // Add Start
                 dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, currentProperty.value);
