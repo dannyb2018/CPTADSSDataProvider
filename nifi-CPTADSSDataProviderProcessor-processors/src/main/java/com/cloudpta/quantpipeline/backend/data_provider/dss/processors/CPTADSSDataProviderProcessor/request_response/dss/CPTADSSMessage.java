@@ -21,8 +21,8 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
                              ProcessContext context, 
                              List<CPTAInstrumentSymbology> symbols, 
                              List<String> fields, 
-                             List<CPTADSSProperty> properties
+                             List<CPTADataProperty> properties
                              ) throws CPTAException
     {
         msgLogger = logger;
