@@ -23,6 +23,8 @@ import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
+import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import java.io.StringReader;
 import java.text.SimpleDateFormat;
@@ -131,7 +133,7 @@ public class CPTADSWSMessageTest
         String field = UUID.randomUUID().toString();
         fields.add(field);
         // default properties
-        List<CPTADSSProperty> properties = new ArrayList<>();
+        List<CPTADataProperty> properties = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
         // Get the result
         String result = instance.buildDataRequest(authorisationToken, symbolList, fields, properties);
@@ -301,7 +303,7 @@ public class CPTADSWSMessageTest
         System.out.println("getDateObjectBuilder");
         
         // Should start with default properties
-        List<CPTADSSProperty> properties = new ArrayList<>();
+        List<CPTADataProperty> properties = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();        
         JsonObjectBuilder defaultDateBuilder = instance.getDateObjectBuilder(properties);
         // Then have today and 1 day before hand
@@ -335,8 +337,8 @@ public class CPTADSWSMessageTest
 
         // 2 days before
         properties = new ArrayList<>();
-        CPTADSSProperty newStartDateProperty = new CPTADSSProperty();
-        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        CPTADataProperty newStartDateProperty = new CPTADataProperty();
+        newStartDateProperty.name = CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY;
         newStartDateProperty.value = "-1D";
         properties.add(newStartDateProperty);
         instance = new CPTADSWSMessage();        
@@ -372,8 +374,8 @@ public class CPTADSWSMessageTest
 
         // A week beforehand
         properties = new ArrayList<>();
-        newStartDateProperty = new CPTADSSProperty();
-        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty = new CPTADataProperty();
+        newStartDateProperty.name = CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY;
         newStartDateProperty.value = "-1W";
         properties.add(newStartDateProperty);
         instance = new CPTADSWSMessage();        
@@ -409,12 +411,12 @@ public class CPTADSWSMessageTest
         
         // 1 month by weeks beforehand
         properties = new ArrayList<>();
-        newStartDateProperty = new CPTADSSProperty();
-        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty = new CPTADataProperty();
+        newStartDateProperty.name = CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY;
         newStartDateProperty.value = "-1M";
         properties.add(newStartDateProperty);
-        CPTADSSProperty newFrequencyProperty = new CPTADSSProperty();
-        newFrequencyProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY;
+        CPTADataProperty newFrequencyProperty = new CPTADataProperty();
+        newFrequencyProperty.name = CPTADataProviderAPIConstants.CPTA_FREQUENCY_PROPERTY;
         newFrequencyProperty.value = "W";
         properties.add(newFrequencyProperty);
         instance = new CPTADSWSMessage();        
@@ -450,12 +452,12 @@ public class CPTADSWSMessageTest
         
         // 1 year by months beforehand
         properties = new ArrayList<>();
-        newStartDateProperty = new CPTADSSProperty();
-        newStartDateProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_START_DATE_PROPERTY;
+        newStartDateProperty = new CPTADataProperty();
+        newStartDateProperty.name = CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY;
         newStartDateProperty.value = "-1Y";
         properties.add(newStartDateProperty);
-        newFrequencyProperty = new CPTADSSProperty();
-        newFrequencyProperty.name = CPTADSSDataProviderProcessorConstants.CPTA_FREQUENCY_PROPERTY;
+        newFrequencyProperty = new CPTADataProperty();
+        newFrequencyProperty.name = CPTADataProviderAPIConstants.CPTA_FREQUENCY_PROPERTY;
         newFrequencyProperty.value = "M";
         properties.add(newFrequencyProperty);
         instance = new CPTADSWSMessage();        
