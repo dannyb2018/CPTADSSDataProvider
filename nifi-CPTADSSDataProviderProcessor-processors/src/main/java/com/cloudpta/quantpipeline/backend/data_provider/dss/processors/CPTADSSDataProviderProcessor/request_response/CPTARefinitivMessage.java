@@ -19,27 +19,13 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response;
 
-import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
-import com.cloudpta.utilites.exceptions.CPTAException;
-import java.util.List;
-import javax.json.JsonArray;
-import org.apache.nifi.logging.ComponentLog;
-import org.apache.nifi.processor.ProcessContext;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataMessage;
 
 /**
  *
  * @author Danny
  */
-public abstract class CPTARefinitivMessage
+public abstract class CPTARefinitivMessage extends CPTADataMessage
 {
-    public abstract JsonArray getResult
-                                      (
-                                      ComponentLog logger,
-                                      ProcessContext context,        
-                                      List<CPTAInstrumentSymbology> symbols, 
-                                      List<String> fields, 
-                                      List<CPTADSSProperty> properties
-                                      )  throws CPTAException;
-                                       
-    public abstract String getMessageType();
+    // Placeholder class as all the work is done in the parent class and in the descendent classes
 }
