@@ -21,6 +21,7 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 
 import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CPTADSSDataProviderProcessorTest
     {        
         // Mock the input file
         // If it is empty then it needs to have rics, fields and properties all empty
-        String emptyRequestString = "{\""+ CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME + "\":[], \""+ CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME + "\":[], \""+ CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME + "\":[]}";
+        String emptyRequestString = "{\""+ CPTADataProviderAPIConstants.INSTRUMENTS_ARRAY_NAME + "\":[], \""+ CPTADataProviderAPIConstants.FIELDS_ARRAY_NAME + "\":[], \""+ CPTADataProviderAPIConstants.PROPERTIES_ARRAY_NAME + "\":[]}";
         InputStream content = new ByteArrayInputStream(emptyRequestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
@@ -69,7 +70,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.assertQueueEmpty();
 
         // If you need to read or do aditional tests on results you can access the content
-        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS);
+        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
         assertTrue(results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
@@ -100,17 +101,17 @@ public class CPTADSSDataProviderProcessorTest
         instruments.add(instrument2);
         // Now add field
         JsonObjectBuilder field1 = Json.createObjectBuilder();
-        field1.add(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME, field1Name);
-        field1.add(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
+        field1.add(CPTADataProviderAPIConstants.FIELD_NAME_FIELD_NAME, field1Name);
+        field1.add(CPTADataProviderAPIConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
         JsonArrayBuilder fields = Json.createArrayBuilder();
         fields.add(field1);
         // Empty properties array
         JsonArrayBuilder emptyPropertiesArray = Json.createArrayBuilder();
         // Add to the request
         JsonObjectBuilder request = Json.createObjectBuilder();
-        request.add(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME, instruments);
-        request.add(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME, fields);
-        request.add(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
+        request.add(CPTADataProviderAPIConstants.INSTRUMENTS_ARRAY_NAME, instruments);
+        request.add(CPTADataProviderAPIConstants.FIELDS_ARRAY_NAME, fields);
+        request.add(CPTADataProviderAPIConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
         
         String requestString = request.build().toString();
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
@@ -134,7 +135,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.assertQueueEmpty();
 
         // If you need to read or do aditional tests on results you can access the content
-        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS);
+        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
         assertTrue(results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
@@ -166,17 +167,17 @@ public class CPTADSSDataProviderProcessorTest
         instruments.add(instrument2);
         // Now add field
         JsonObjectBuilder field1 = Json.createObjectBuilder();
-        field1.add(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME, field1Name);
-        field1.add(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
+        field1.add(CPTADataProviderAPIConstants.FIELD_NAME_FIELD_NAME, field1Name);
+        field1.add(CPTADataProviderAPIConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
         JsonArrayBuilder fields = Json.createArrayBuilder();
         fields.add(field1);
         // Empty properties array
         JsonArrayBuilder emptyPropertiesArray = Json.createArrayBuilder();
         // Add to the request
         JsonObjectBuilder request = Json.createObjectBuilder();
-        request.add(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME, instruments);
-        request.add(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME, fields);
-        request.add(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
+        request.add(CPTADataProviderAPIConstants.INSTRUMENTS_ARRAY_NAME, instruments);
+        request.add(CPTADataProviderAPIConstants.FIELDS_ARRAY_NAME, fields);
+        request.add(CPTADataProviderAPIConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
         
         String requestString = request.build().toString();
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
@@ -189,7 +190,6 @@ public class CPTADSSDataProviderProcessorTest
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY, DSWS_USER_NAME);
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_PASSWORD_PROPERTY, DSS_PASSWORD);
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY, DSWS_PASSWORD);
-
         // Add the content to the runner
         runner.enqueue(content);
 
@@ -200,7 +200,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.assertQueueEmpty();
 
         // If you need to read or do aditional tests on results you can access the content
-        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS);
+        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
         assertTrue("1 match", results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
@@ -233,17 +233,17 @@ public class CPTADSSDataProviderProcessorTest
         instruments.add(instrument2);
         // Now add field
         JsonObjectBuilder field1 = Json.createObjectBuilder();
-        field1.add(CPTADSSDataProviderProcessorConstants.FIELD_NAME_FIELD_NAME, field1Name);
-        field1.add(CPTADSSDataProviderProcessorConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
+        field1.add(CPTADataProviderAPIConstants.FIELD_NAME_FIELD_NAME, field1Name);
+        field1.add(CPTADataProviderAPIConstants.MESSAGE_TYPE_FIELD_NAME, CPTADSSConstants.EOD_MESSAGE_TYPE);
         JsonArrayBuilder fields = Json.createArrayBuilder();
         fields.add(field1);
         // Empty properties array
         JsonArrayBuilder emptyPropertiesArray = Json.createArrayBuilder();
         // Add to the request
         JsonObjectBuilder request = Json.createObjectBuilder();
-        request.add(CPTADSSDataProviderProcessorConstants.INSTRUMENTS_ARRAY_NAME, instruments);
-        request.add(CPTADSSDataProviderProcessorConstants.FIELDS_ARRAY_NAME, fields);
-        request.add(CPTADSSDataProviderProcessorConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
+        request.add(CPTADataProviderAPIConstants.INSTRUMENTS_ARRAY_NAME, instruments);
+        request.add(CPTADataProviderAPIConstants.FIELDS_ARRAY_NAME, fields);
+        request.add(CPTADataProviderAPIConstants.PROPERTIES_ARRAY_NAME, emptyPropertiesArray);
         
         String requestString = request.build().toString();
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
@@ -268,7 +268,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.assertQueueEmpty();
 
         // If you need to read or do aditional tests on results you can access the content
-        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS);
+        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
         assertTrue("1 match", results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
@@ -305,7 +305,7 @@ public class CPTADSSDataProviderProcessorTest
         runner.assertQueueEmpty();
 
         // If you need to read or do aditional tests on results you can access the content
-        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADSSDataProviderProcessorConstants.RELATIONSHIP_NAME_SUCCESS);
+        List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
         assertTrue("1 match", results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
