@@ -20,10 +20,8 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
 import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTADSSProperty;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import java.io.StringReader;
@@ -603,7 +601,7 @@ public class CPTADSWSMessageTest
         JsonObject dataResponseObject = dataResponseObjectBuilder.build();
         List<String> dates = new ArrayList<>();
         CPTADSWSMessage instance = new CPTADSWSMessage();
-        HashMap<String, List<CPTAFieldValue>> result = instance.getResultsByRic(dataResponseObject, dates);
+        HashMap<String, List<CPTADataFieldValue>> result = instance.getResultsByRic(dataResponseObject, dates);
         // Result should be empty        
         assertTrue(result.isEmpty());
 
@@ -638,11 +636,11 @@ public class CPTADSWSMessageTest
         result = instance.getResultsByRic(dataResponseObject, dates);
         // Cant be empty
         assertTrue(false == result.isEmpty());
-        List<CPTAFieldValue> ric1Result = result.get(ric1);
+        List<CPTADataFieldValue> ric1Result = result.get(ric1);
         assertNotNull(ric1Result);
         // Should be just one block
         assertEquals(ric1Result.size(), 1);
-        CPTAFieldValue resultBlock11 = ric1Result.get(0);
+        CPTADataFieldValue resultBlock11 = ric1Result.get(0);
         assertEquals(resultBlock11.name, field1);
         assertEquals(resultBlock11.date, nowDate);
         assertEquals(resultBlock11.value, Double.toString(field1Ric1Value1));
@@ -792,7 +790,7 @@ public class CPTADSWSMessageTest
         // Should have two rics
         assertEquals(result.keySet().size(), 2);
         // Get first ric
-        List<CPTAFieldValue> ric1Values = result.get(ric1);
+        List<CPTADataFieldValue> ric1Values = result.get(ric1);
         assertNotNull(ric1Values);
         // Only one value
         assertEquals(ric1Values.size(),1);
@@ -802,7 +800,7 @@ public class CPTADSWSMessageTest
         assertEquals(ric1Values.get(0).value, Double.toString(field1Ric1Value1));
 
         // Get second ric
-        List<CPTAFieldValue> ric2Values = result.get(ric2);
+        List<CPTADataFieldValue> ric2Values = result.get(ric2);
         assertNotNull(ric2Values);
         // Only one value
         assertEquals(ric2Values.size(),1);
@@ -907,7 +905,7 @@ public class CPTADSWSMessageTest
         System.out.println("addDSWSRowsToExistingResult");
         
         // start with an empty results
-        HashMap<String, List<CPTAFieldValue>> resultsByRic = new HashMap<>(); 
+        HashMap<String, List<CPTADataFieldValue>> resultsByRic = new HashMap<>(); 
         JsonArrayBuilder existingDataInCPTAFormat = Json.createArrayBuilder();
         CPTADSWSMessage instance = new CPTADSWSMessage();
         instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
@@ -922,11 +920,11 @@ public class CPTADSWSMessageTest
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
         String date1 = simpleDateFormat.format(now.getTime());
         resultsByRic = new HashMap<>(); 
-        CPTAFieldValue value1 = new CPTAFieldValue();
+        CPTADataFieldValue value1 = new CPTADataFieldValue();
         value1.date = date1;
         value1.name = field1;
         value1.value = Double.toString(ric1Field1Value);
-        List<CPTAFieldValue> valueList1 = new ArrayList<>();
+        List<CPTADataFieldValue> valueList1 = new ArrayList<>();
         valueList1.add(value1);
         resultsByRic.put(ric1, valueList1);
         existingDataInCPTAFormat = Json.createArrayBuilder();
@@ -951,7 +949,7 @@ public class CPTADSWSMessageTest
         double ric1Field2Value2 = Math.random();
         String date2 = simpleDateFormat.format(now.getTime());
         resultsByRic = new HashMap<>(); 
-        CPTAFieldValue value2 = new CPTAFieldValue();
+        CPTADataFieldValue value2 = new CPTADataFieldValue();
         value2.date = date2;
         value2.name = field1;
         value2.value = Double.toString(ric1Field2Value2);
