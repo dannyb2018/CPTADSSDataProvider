@@ -22,9 +22,9 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
 import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTAFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
+import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
@@ -439,7 +439,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         
         // In parsing, we should have an array of field blocks
         // mapped by ric
-        HashMap<String, List<CPTAFieldValue>> resultsByRic = getResultsByRic
+        HashMap<String, List<CPTADataFieldValue>> resultsByRic = getResultsByRic
                                                                            (
                                                                            dataResponseObject, 
                                                                            dates
@@ -449,7 +449,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
     
     protected void addDSWSRowsToExistingResult
                                              (
-                                             HashMap<String, List<CPTAFieldValue>> resultsByRic, 
+                                             HashMap<String, List<CPTADataFieldValue>> resultsByRic, 
                                              JsonArrayBuilder existingDataInCPTAFormat
                                              )
     {
@@ -460,8 +460,8 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
             // For each date there is going to be a json object with all the
             // data for that ric on that date
             HashMap<String, JsonObjectBuilder> rowsForThisRic = new HashMap<>();
-            List<CPTAFieldValue> valuesForThisRic = resultsByRic.get(currentRic);
-            for(CPTAFieldValue currentValue : valuesForThisRic)
+            List<CPTADataFieldValue> valuesForThisRic = resultsByRic.get(currentRic);
+            for(CPTADataFieldValue currentValue : valuesForThisRic)
             {
                 // Get the row for this date                
                 JsonObjectBuilder rowForThisDate = rowsForThisRic.get(currentValue.date);
@@ -520,13 +520,13 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return datesAsString;
     }
     
-    protected HashMap<String, List<CPTAFieldValue>> getResultsByRic
+    protected HashMap<String, List<CPTADataFieldValue>> getResultsByRic
                                                                   (
                                                                   JsonObject dataResponseObject, 
                                                                   List<String> dates
                                                                   )
     {
-        HashMap<String, List<CPTAFieldValue>> resultsByRic = new HashMap<>();        
+        HashMap<String, List<CPTADataFieldValue>> resultsByRic = new HashMap<>();        
         // Need to go through the 
         JsonArray fields = dataResponseObject.getJsonArray(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD);
         // Loop through all the data type values
@@ -549,7 +549,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     String ric = valuesForThisRic.getString(CPTADSWSConstants.SYMBOL_FIELD); 
                     ric = ric.substring(1, ric.length()-1);
                     // If there was not an entry for this ric
-                    List<CPTAFieldValue> fieldValuesForThisRic = resultsByRic.get(ric);
+                    List<CPTADataFieldValue> fieldValuesForThisRic = resultsByRic.get(ric);
                     if( null == fieldValuesForThisRic )
                     {
                         // add it
@@ -559,7 +559,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     
                     // Get the values
                     // This is a new value
-                    CPTAFieldValue valueForThisRicAndField = new CPTAFieldValue();
+                    CPTADataFieldValue valueForThisRicAndField = new CPTADataFieldValue();
                     // Set the field name
                     valueForThisRicAndField.name = fieldName;
 
