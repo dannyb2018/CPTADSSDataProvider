@@ -25,7 +25,5 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
  */
 public class CPTAFieldValue
 {
-    public String name;
-    public String value;
-    public String date;
+    // Placeholder not used now
 }
