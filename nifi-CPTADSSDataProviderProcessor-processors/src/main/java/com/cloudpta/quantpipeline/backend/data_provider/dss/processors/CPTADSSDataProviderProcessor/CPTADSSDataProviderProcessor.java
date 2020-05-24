@@ -25,7 +25,8 @@ import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDa
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSEODMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSTimeSeriesMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSConstants;
-import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSNotTimeseriesMessage;
+import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws.CPTADSWSTimeseriesMessage;
 import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderProcessor;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataRetriever;
 import java.util.HashMap;
@@ -65,20 +66,24 @@ public class CPTADSSDataProviderProcessor extends CPTADataProviderProcessor<CPTA
         typeToMessageClassMap = new HashMap<>();
         // Populate with types
         // DSS End of day
-        Class eodDSSMesageClass = CPTADSSEODMessage.class;
-        typeToMessageClassMap.put(CPTADSSConstants.EOD_MESSAGE_TYPE, eodDSSMesageClass);
+        Class eodDSSMessageClass = CPTADSSEODMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.EOD_MESSAGE_TYPE, eodDSSMessageClass);
         // DSS Corporate actions
-        Class caDSSMesageClass = CPTADSSCorporateActionsMessage.class;
-        typeToMessageClassMap.put(CPTADSSConstants.CA_MESSAGE_TYPE, caDSSMesageClass);
+        Class caDSSMessageClass = CPTADSSCorporateActionsMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.CA_MESSAGE_TYPE, caDSSMessageClass);
         // DSS time series
-        Class tsDSSMesageClass = CPTADSSTimeSeriesMessage.class;
-        typeToMessageClassMap.put(CPTADSSConstants.TS_MESSAGE_TYPE, tsDSSMesageClass);
+        Class tsDSSMessageClass = CPTADSSTimeSeriesMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.TS_MESSAGE_TYPE, tsDSSMessageClass);
         // DSS composite
-        Class compositeDSSMesageClass = CPTADSSCompositeMessage.class;
-        typeToMessageClassMap.put(CPTADSSConstants.COMPOSITE_MESSAGE_TYPE, compositeDSSMesageClass);
-        // DSWS 
-        Class dswsMesageClass = CPTADSWSMessage.class;
-        typeToMessageClassMap.put(CPTADSWSConstants.MESSAGE_TYPE, dswsMesageClass);
+        Class compositeDSSMessageClass = CPTADSSCompositeMessage.class;
+        typeToMessageClassMap.put(CPTADSSConstants.COMPOSITE_MESSAGE_TYPE, compositeDSSMessageClass);
+        // DSWS no times series data, usually either static or has timeframe built in
+        // Like dividends
+        Class dswsNoTSMessageClass = CPTADSWSNotTimeseriesMessage.class;
+        typeToMessageClassMap.put(CPTADSWSConstants.NO_TIME_SERIES_MESSAGE_TYPE, dswsNoTSMessageClass);
+        // DSWS with times series
+        Class dswsTSMessageClass = CPTADSWSTimeseriesMessage.class;
+        typeToMessageClassMap.put(CPTADSWSConstants.TIME_SERIES_MESSAGE_TYPE, dswsTSMessageClass);
         
         dataRetriever = CPTADataRetriever.getInstance(typeToMessageClassMap);
     }
