@@ -61,7 +61,7 @@ public class CPTADSWSMessageTest
         System.out.println("buildTokenRequest");
         String userName = UUID.randomUUID().toString();
         String password = UUID.randomUUID().toString();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
         String generatedTokenRequestAsString = instance.buildTokenRequest(userName, password);
         // Parse the result
         JsonObject generatedTokeRequest = Json.createReader(new StringReader(generatedTokenRequestAsString)).readObject();
@@ -132,7 +132,7 @@ public class CPTADSWSMessageTest
         fields.add(field);
         // default properties
         List<CPTADataProperty> properties = new ArrayList<>();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
         // Get the result
         String result = instance.buildDataRequest(authorisationToken, symbolList, fields, properties);
         assertNotNull(result);
@@ -205,7 +205,7 @@ public class CPTADSWSMessageTest
         // Start with an empty list
         System.out.println("getFieldsArrayBuilder empty field list");
         List<String> inputFields = new ArrayList<>();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
         JsonArrayBuilder emptyFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
         // Shouldnt be null
         assertNotNull(emptyFieldsArrayBuilder);
@@ -218,7 +218,7 @@ public class CPTADSWSMessageTest
         System.out.println("getFieldsArrayBuilder one field list");
         String field1 = UUID.randomUUID().toString();
         inputFields.add(field1);
-        instance = new CPTADSWSMessage();
+        instance = new CPTADSWSNotTimeseriesMessage();
         JsonArrayBuilder oneFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
         // Shouldnt be null
         assertNotNull(oneFieldsArrayBuilder);
@@ -245,7 +245,7 @@ public class CPTADSWSMessageTest
         inputFields.add(field2);
         String field3 = UUID.randomUUID().toString();
         inputFields.add(field3);
-        instance = new CPTADSWSMessage();
+        instance = new CPTADSWSNotTimeseriesMessage();
         JsonArrayBuilder threeFieldsArrayBuilder = instance.getFieldsArrayBuilder(inputFields);        
         // Shouldnt be null
         assertNotNull(threeFieldsArrayBuilder);
@@ -295,14 +295,14 @@ public class CPTADSWSMessageTest
     /**
      * Test of getDateObjectBuilder method, of class CPTADSWSMessage.
      */
-    @Test
+/*    @Test
     public void testGetDateObjectBuilder()
     {
         System.out.println("getDateObjectBuilder");
         
         // Should start with default properties
         List<CPTADataProperty> properties = new ArrayList<>();
-        CPTADSWSMessage instance = new CPTADSWSMessage();        
+        CPTADSWSMessage instance = new CPTADSWSNotTimeseriesMessage();        
         JsonObjectBuilder defaultDateBuilder = instance.getDateObjectBuilder(properties);
         // Then have today and 1 day before hand
         assertNotNull(defaultDateBuilder);
@@ -490,7 +490,7 @@ public class CPTADSWSMessageTest
         assertEquals(frequencyAsString, newFrequencyProperty.value);
         
     }
-
+*/
     /**
      * Test of getInstrumentObjectBuilder method, of class CPTADSWSMessage.
      */
@@ -502,7 +502,7 @@ public class CPTADSWSMessageTest
         // Start with no symbols
         System.out.println("getInstrumentObjectBuilder no symbols");
         String symbolList = "";
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
         JsonObjectBuilder emptyInstrumentBuilder = instance.getInstrumentObjectBuilder(symbolList);
         assertNotNull(emptyInstrumentBuilder);
         JsonObject emptyInstrument = emptyInstrumentBuilder.build();
@@ -521,7 +521,7 @@ public class CPTADSWSMessageTest
         // The random string for symbols
         System.out.println("getInstrumentObjectBuilder random symbols");
         symbolList = UUID.randomUUID().toString();
-        instance = new CPTADSWSMessage();        
+        instance = new CPTADSWSNotTimeseriesMessage();        
         JsonObjectBuilder randomInstrumentBuilder = instance.getInstrumentObjectBuilder(symbolList);
         assertNotNull(randomInstrumentBuilder);
         JsonObject randomInstrument = randomInstrumentBuilder.build();
@@ -540,7 +540,7 @@ public class CPTADSWSMessageTest
     /**
      * Test of getDataResultDates method, of class CPTADSWSMessage.
      */
-    @Test
+ /*   @Test
     public void testGetDataResultDates()
     {
         // DS date format is \/Date(time_in_millis+0000)\/
@@ -555,7 +555,7 @@ public class CPTADSWSMessageTest
         jsonDataResponse.add("Dates", jsonDateArray);
         
         JsonObject dataResponseObject = jsonDataResponse.build();        
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
 
         // Pass in a result with no dates
         List<String> emptyDateResult = instance.getDataResultDates(dataResponseObject);
@@ -580,7 +580,7 @@ public class CPTADSWSMessageTest
         assertEquals(oneDateResult.get(0), expectedResult);
         // Pass in a result with 10 dates
     }
-
+*/
     /**
      * Test of getResultsByRic method, of class CPTADSWSMessage.
      */
@@ -600,8 +600,8 @@ public class CPTADSWSMessageTest
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         JsonObject dataResponseObject = dataResponseObjectBuilder.build();
         List<String> dates = new ArrayList<>();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
-        HashMap<String, List<CPTADataFieldValue>> result = instance.getResultsByRic(dataResponseObject, dates);
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
+        HashMap<String, List<CPTADataFieldValue>> result = instance.getResultsBySymbol(dataResponseObject);
         // Result should be empty        
         assertTrue(result.isEmpty());
 
@@ -632,8 +632,8 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        instance = new CPTADSWSMessage();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        instance = new CPTADSWSNotTimeseriesMessage();
+        result = instance.getResultsBySymbol(dataResponseObject);
         // Cant be empty
         assertTrue(false == result.isEmpty());
         List<CPTADataFieldValue> ric1Result = result.get(ric1);
@@ -678,7 +678,7 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        result = instance.getResultsBySymbol(dataResponseObject);
         // Cant be empty
         assertTrue(false == result.isEmpty());
         ric1Result = result.get(ric1);
@@ -713,7 +713,7 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        result = instance.getResultsBySymbol(dataResponseObject);
         // Should be empty
         assertTrue(result.isEmpty());
         
@@ -749,7 +749,7 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        result = instance.getResultsBySymbol(dataResponseObject);
         assertTrue(result.isEmpty());
         
         // handle two rics with a datapoint
@@ -785,7 +785,7 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field1ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        result = instance.getResultsBySymbol(dataResponseObject);
         assertTrue(false == result.isEmpty());
         // Should have two rics
         assertEquals(result.keySet().size(), 2);
@@ -868,7 +868,7 @@ public class CPTADSWSMessageTest
         dataTypeValuesBuilder.add(field2ResponseBuilder);
         dataResponseObjectBuilder.add(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD, dataTypeValuesBuilder);
         dataResponseObject = dataResponseObjectBuilder.build();
-        result = instance.getResultsByRic(dataResponseObject, dates);
+        result = instance.getResultsBySymbol(dataResponseObject);
         // Shouldnt be empty
         assertTrue(false == result.isEmpty());
         // Should have two rics
@@ -907,7 +907,7 @@ public class CPTADSWSMessageTest
         // start with an empty results
         HashMap<String, List<CPTADataFieldValue>> resultsByRic = new HashMap<>(); 
         JsonArrayBuilder existingDataInCPTAFormat = Json.createArrayBuilder();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSNotTimeseriesMessage instance = new CPTADSWSNotTimeseriesMessage();
         instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
         assertNotNull(existingDataInCPTAFormat);
         JsonArray result = existingDataInCPTAFormat.build();
@@ -928,7 +928,7 @@ public class CPTADSWSMessageTest
         valueList1.add(value1);
         resultsByRic.put(ric1, valueList1);
         existingDataInCPTAFormat = Json.createArrayBuilder();
-        instance = new CPTADSWSMessage();
+        instance = new CPTADSWSNotTimeseriesMessage();
         instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
         // should not be empty
         assertNotNull(existingDataInCPTAFormat);
@@ -958,7 +958,7 @@ public class CPTADSWSMessageTest
         valueList1.add(value2);
         resultsByRic.put(ric1, valueList1);
         existingDataInCPTAFormat = Json.createArrayBuilder();
-        instance = new CPTADSWSMessage();
+        instance = new CPTADSWSNotTimeseriesMessage();
         instance.addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
         // should not be empty
         assertNotNull(existingDataInCPTAFormat);
@@ -979,7 +979,7 @@ public class CPTADSWSMessageTest
         String testResponse = "{\"DataResponse\":{\"AdditionalResponses\":[{\"Key\":\"Frequency\",\"Value\":\"D\"}],\"DataTypeNames\":null,\"DataTypeValues\":[{\"DataType\":\"RI\",\"SymbolValues\":[{\"Currency\":\"U$\",\"Symbol\":\"<ISRG.OQ>\",\"Type\":10,\"Value\":[9757.15]},{\"Currency\":\"U$\",\"Symbol\":\"<AVB.N>\",\"Type\":10,\"Value\":[3226.13]}]}],\"Dates\":[\"\\/Date(1575244800000+0000)\\/\"],\"SymbolNames\":null,\"Tag\":null},\"Properties\":null}";
         JsonReader JsonReader = Json.createReader(new StringReader(testResponse));
         JsonObject parsedResponse = JsonReader.readObject();
-        CPTADSWSMessage instance = new CPTADSWSMessage();
+        CPTADSWSMessage instance = new CPTADSWSNotTimeseriesMessage();
         JsonArrayBuilder existingDataInCPTAFormat = Json.createArrayBuilder();
         instance.mergeDSWSResponseWithCPTAFormat(parsedResponse, existingDataInCPTAFormat);
         String t = existingDataInCPTAFormat.build().toString();
