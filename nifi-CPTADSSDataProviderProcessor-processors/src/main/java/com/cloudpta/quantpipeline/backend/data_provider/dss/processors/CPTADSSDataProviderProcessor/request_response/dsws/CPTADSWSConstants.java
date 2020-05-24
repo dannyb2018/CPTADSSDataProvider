@@ -25,7 +25,8 @@ package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSD
  */
 public interface CPTADSWSConstants
 {
-    public static final String MESSAGE_TYPE = "DSWS";
+    public static final String NO_TIME_SERIES_MESSAGE_TYPE = "DSWS.NO_TS";
+    public static final String TIME_SERIES_MESSAGE_TYPE = "DSWS.TS";
     
     public static final String GET_TOKEN = "/GetToken";
     public static final String GET_DATA = "/GetData";
