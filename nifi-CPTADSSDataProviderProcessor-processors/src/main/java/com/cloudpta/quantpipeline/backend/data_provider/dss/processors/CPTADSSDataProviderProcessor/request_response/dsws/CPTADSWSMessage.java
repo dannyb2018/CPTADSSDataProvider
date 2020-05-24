@@ -23,15 +23,12 @@ import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
-import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
 import com.cloudpta.utilites.CPTAUtilityConstants;
 import com.cloudpta.utilites.exceptions.CPTAException;
 import java.io.StringReader;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -55,12 +52,21 @@ import org.apache.nifi.processor.ProcessContext;
  *
  * @author Danny
  */
-public class CPTADSWSMessage extends CPTARefinitivMessage
-{
-    @Override
-    public String getMessageType()
+public abstract class CPTADSWSMessage extends CPTARefinitivMessage
+{   
+    protected String convertSymbol(CPTAInstrumentSymbology symbolToGet)
     {
-        return CPTADSWSConstants.MESSAGE_TYPE;
+        // For Datascope to use rics needs to be of the form <RIC> 
+        // If it is a ric, need a <> around it
+        if( 0 == symbolToGet.getIDSource().compareTo(CPTAInstrumentConstants.ID_SOURCE_RIC))
+        {
+            return "<" + symbolToGet.getID() + ">";
+        }
+        else
+        // if it is datastrea just as is
+        {
+            return symbolToGet.getID();
+        }
     }
     
     @Override
@@ -79,25 +85,24 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
 
         JsonArrayBuilder cptaDataResponse  = Json.createArrayBuilder();
         
-        // Can only do 50 rics at a time
+        // Can only do 50 symbols at a time
         // So need to keep count of how many we have done already
-        int ricsOffset = 0;
+        int symbolsOffset = 0;
         // Whilst there are more rics to query for
-        while(symbols.size() > ricsOffset)
+        while(symbols.size() > symbolsOffset)
         {
             // Take out at most first 50 rics
-            int upperLimit = Math.min(symbols.size(), ricsOffset + 50);
-            List<CPTAInstrumentSymbology> ricsToGet = (List<CPTAInstrumentSymbology>) symbols.subList(ricsOffset, upperLimit);     
+            int upperLimit = Math.min(symbols.size(), symbolsOffset + 50);
+            List<CPTAInstrumentSymbology> symbolsToGet = (List<CPTAInstrumentSymbology>) symbols.subList(symbolsOffset, upperLimit);     
             // Update the offset to where we are
-            ricsOffset = upperLimit;
+            symbolsOffset = upperLimit;
             
             // Add each one
             String symbolList = "";
-            for( CPTAInstrumentSymbology ric: ricsToGet)
+            for( CPTAInstrumentSymbology symbol: symbolsToGet)
             {
-                // For Datascope to use rics needs to be of the form <RIC> 
-                // Comma to make it a list of rics
-                symbolList = symbolList + ",<" + ric.getID() + ">";
+                // Comma to make it a list of symbols
+                symbolList = symbolList + "," + convertSymbol(symbol);
             }
             // Got a spare comma at the start so remove it
             symbolList = symbolList.substring(1);
@@ -223,6 +228,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         //                  Properties: null,Value: what_ever_field_we_want
         //              }
         //          ],
+        //          If we are a timeseries
         //          Format of date is from offset from today, to offset from today
         //          frequecy is interval type and Kind is number of those intervals
         //          Date:
@@ -278,13 +284,6 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                                    CPTADSWSConstants.DATA_TYPES_FIELD, 
                                    fieldsArrayBuilder
                                    );
-        // Add Date aka properties
-        JsonObjectBuilder dataBuilder = getDateObjectBuilder(properties);
-        dataRequestObjectBuilder.add
-                                   (
-                                   CPTADSWSConstants.DATE_FIELD, 
-                                   dataBuilder
-                                   );
         // Add instruments
         JsonObjectBuilder instrumentBuilder = getInstrumentObjectBuilder(symbolList);
         dataRequestObjectBuilder.add
@@ -329,55 +328,6 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         return fieldsArrayBuilder;
     }
     
-    protected JsonObjectBuilder getDateObjectBuilder(List<CPTADataProperty> properties)
-    {
-        // BUGBUGDB should probably do some error checking to ensure the properties 
-        // are correct format and values
-        
-        //          Format of date is from offset from today, to offset from today
-        //          frequency is interval type and Kind is number of those intervals
-        //          Date:
-        //          {
-        //              End: to_this_date_or_offset,
-        //              Frequency: D|Y|M,
-        //              Kind: 1,
-        //              Start: from_this_date_or_offset
-        //          }
-        JsonObjectBuilder dateObjectBuilder = Json.createObjectBuilder();
-        // For now kind is always 1
-        dateObjectBuilder.add(CPTADSWSConstants.KIND_FIELD, CPTADSWSConstants.KIND_FIELD_DEFAULT);
-        
-        // Default is the last day only
-        dateObjectBuilder.add(CPTADSWSConstants.END_OFFSET_FIELD, CPTADSWSConstants.END_DATE_PROPERTY_DEFAULT);
-        dateObjectBuilder.add(CPTADSWSConstants.FREQUENCY_FIELD, CPTADSWSConstants.FREQUENCY_PROPERTY_DEFAULT);
-        dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, CPTADSWSConstants.START_DATE_PROPERTY_DEFAULT);
-        
-        // Loop through properties
-        for(CPTADataProperty currentProperty : properties )
-        {
-            // If it is frequency
-            if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_FREQUENCY_PROPERTY))
-            {
-                // Add Frequency
-                dateObjectBuilder.add(CPTADSWSConstants.FREQUENCY_FIELD, currentProperty.value);
-            }
-            // If it is end offset
-            else if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_END_DATE_PROPERTY))
-            {
-                // Add End
-                dateObjectBuilder.add(CPTADSWSConstants.END_OFFSET_FIELD, currentProperty.value);
-            }
-            // If it is start offset
-            else if( 0 == currentProperty.name.compareTo(CPTADataProviderAPIConstants.CPTA_START_DATE_PROPERTY))
-            {
-                // Add Start
-                dateObjectBuilder.add(CPTADSWSConstants.START_OFFSET_FIELD, currentProperty.value);
-            }
-        }
-        
-        return dateObjectBuilder;
-    }
-    
     protected JsonObjectBuilder getInstrumentObjectBuilder(String symbolList)
     {
         // Format is as follows
@@ -405,6 +355,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         // {
         //      DataResponse:
         //      {
+        //          Not all responses have dates
         //          Dates:
         //          [
         //              Dates are in some weird datastream format
@@ -434,127 +385,71 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         
         // Drill down to Dates first
         JsonObject dataResponseObject = newDSWSData.getJsonObject("DataResponse");
-        // Get dates array
-        List<String> dates = getDataResultDates(dataResponseObject);
-        
-        // In parsing, we should have an array of field blocks
-        // mapped by ric
-        HashMap<String, List<CPTADataFieldValue>> resultsByRic = getResultsByRic
-                                                                           (
-                                                                           dataResponseObject, 
-                                                                           dates
-                                                                           );
-        addDSWSRowsToExistingResult(resultsByRic, existingDataInCPTAFormat);
+
+        // Get the results, in non timeseries messages will just be data
+        // timeseries message will override this and add dates
+        HashMap<String, List<CPTADataFieldValue>> resultsBySymbol = getResultsBySymbol(dataResponseObject);
+        addDSWSRowsToExistingResult(resultsBySymbol, existingDataInCPTAFormat);
     }
     
-    protected void addDSWSRowsToExistingResult
-                                             (
-                                             HashMap<String, List<CPTADataFieldValue>> resultsByRic, 
-                                             JsonArrayBuilder existingDataInCPTAFormat
-                                             )
+    protected HashMap<String, List<CPTADataFieldValue>> getResultsBySymbol(JsonObject dataResponseObject)
     {
-        // for each ric, we add a row of data for each date
-        Set<String> ricsWithResults = resultsByRic.keySet();
-        for( String currentRic: ricsWithResults)
-        {
-            // For each date there is going to be a json object with all the
-            // data for that ric on that date
-            HashMap<String, JsonObjectBuilder> rowsForThisRic = new HashMap<>();
-            List<CPTADataFieldValue> valuesForThisRic = resultsByRic.get(currentRic);
-            for(CPTADataFieldValue currentValue : valuesForThisRic)
-            {
-                // Get the row for this date                
-                JsonObjectBuilder rowForThisDate = rowsForThisRic.get(currentValue.date);
-                // If this is the first date
-                if( null == rowForThisDate )
-                {
-                    // Create a row
-                    rowForThisDate = Json.createObjectBuilder();
-                    // For consistency with DSS
-                    // Need identifier in this format
-                    // "IdentifierType":"Ric","Identifier":"2618.TW"
-                    // Add the ric
-                    rowForThisDate.add(CPTAInstrumentConstants.ID_FIELD_NAME, currentRic);
-                    // Add that the identifier is a RIC
-                    rowForThisDate.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
-                    // Add the date
-                    rowForThisDate.add(CPTAUtilityConstants.DATE_FIELD_NAME, currentValue.date);
-                    // Add to rows
-                    rowsForThisRic.put(currentValue.date, rowForThisDate);
-                }
-                // Add the field name and its value
-                rowForThisDate.add(currentValue.name, currentValue.value);
-            }
-            
-            // add the rows to the result
-            Collection<JsonObjectBuilder> rowsToAdd = rowsForThisRic.values();
-            for(JsonObjectBuilder currentRow : rowsToAdd)
-            {
-                existingDataInCPTAFormat.add(0, currentRow);
-            }
-        }        
+        // Default is not to have any dates so just a data block
+        // Get datatypes block
+        JsonArray dataTypeValues = dataResponseObject.getJsonArray(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD);
+        HashMap<String, List<CPTADataFieldValue>> resultsWithoutDateTimestamp = parseDataTypeValues(dataTypeValues);
+        return resultsWithoutDateTimestamp;
     }
     
-    protected List<String> getDataResultDates(JsonObject dataResponseObject)
+    protected HashMap<String, List<CPTADataFieldValue>> parseDataTypeValues(JsonArray dataTypeValues)
     {
-        JsonArray dates = dataResponseObject.getJsonArray(CPTADSWSConstants.DATES_FIELD);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(CPTAUtilityConstants.CPTA_DATE_FORMAT);
-        ArrayList<String> datesAsString = new ArrayList<>();
+        //          DataTypeValues:
+        //          [
+        //              This is an array, with the field first then data by ric
+        //              DataType: name_of_the_field_this_data_is_for,
+        //              SymbolValues:
+        //              [
+        //                  {
+        //                      This is the return type for this symbol, 12 or 10 means there is data
+        //                      Type: return_type_as_int,
+        //                      symbol which is format <RIC>
+        //                      Symbol: <RIC>,
+        //                      Value:
+        //                      [
+        //                          array_of_field_in_same_order_date_timestamps    
+        //                      ]
+        //                  }
+        //              ]
+        //          ]
         
-        // Go through each of the dates to convert it to a date string
-        for( int i=0; i < dates.size(); i++)
-        {
-            String millisecondsAsString = dates.getString(i);
-            // Strip away everything apart from the milliseconds
-            millisecondsAsString = millisecondsAsString.substring(6,19);
-            long dateAsLong = Long.parseLong(millisecondsAsString);
-            // Convert it into a date
-            Calendar date = Calendar.getInstance();
-            date.setTimeInMillis(dateAsLong);
-            // Convert it into a string
-            String dateAsString = simpleDateFormat.format(date.getTime());
-            // Add it to the list
-            datesAsString.add(dateAsString);
-        }
-        
-        return datesAsString;
-    }
-    
-    protected HashMap<String, List<CPTADataFieldValue>> getResultsByRic
-                                                                  (
-                                                                  JsonObject dataResponseObject, 
-                                                                  List<String> dates
-                                                                  )
-    {
-        HashMap<String, List<CPTADataFieldValue>> resultsByRic = new HashMap<>();        
+        HashMap<String, List<CPTADataFieldValue>> resultsBySymbol = new HashMap<>();        
         // Need to go through the 
-        JsonArray fields = dataResponseObject.getJsonArray(CPTADSWSConstants.DATA_TYPE_VALUES_FIELD);
         // Loop through all the data type values
-        for( int i = 0; i < fields.size(); i++)
+        for( int i = 0; i < dataTypeValues.size(); i++)
         {
             // Get the block for this field type
-            JsonObject currentFieldBlock = fields.getJsonObject(i);
+            JsonObject currentFieldBlock = dataTypeValues.getJsonObject(i);
             // get the field name, this is in DataType in json
             String fieldName = currentFieldBlock.getString(CPTADSWSConstants.DATA_TYPE_FIELD);
             // Now we loop through all the rics
-            JsonArray valuesForThisFieldByRic = currentFieldBlock.getJsonArray(CPTADSWSConstants.SYMBOL_VALUES_FIELD);
-            for( int j = 0; j < valuesForThisFieldByRic.size(); j++ )
+            JsonArray valuesForThisFieldBySymbol = currentFieldBlock.getJsonArray(CPTADSWSConstants.SYMBOL_VALUES_FIELD);
+            for( int j = 0; j < valuesForThisFieldBySymbol.size(); j++ )
             {
-                JsonObject valuesForThisRic = valuesForThisFieldByRic.getJsonObject(j);
+                JsonObject valuesForThisSymbol = valuesForThisFieldBySymbol.getJsonObject(j);
                 // Check if it is an error, if it is not
-                int errorCode = valuesForThisRic.getInt(CPTADSWSConstants.TYPE_FIELD);
+                int errorCode = valuesForThisSymbol.getInt(CPTADSWSConstants.TYPE_FIELD);
                 if( (10 == errorCode) || (12 == errorCode) )
                 {
-                    // Set the ric
-                    String ric = valuesForThisRic.getString(CPTADSWSConstants.SYMBOL_FIELD); 
-                    ric = ric.substring(1, ric.length()-1);
+                    // Set the symbol
+                    String symbol = valuesForThisSymbol.getString(CPTADSWSConstants.SYMBOL_FIELD); 
+                    symbol = symbol.substring(1, symbol.length()-1);
                     // If there was not an entry for this ric
-                    List<CPTADataFieldValue> fieldValuesForThisRic = resultsByRic.get(ric);
-                    if( null == fieldValuesForThisRic )
+                    List<CPTADataFieldValue> fieldValuesForThisSymbol = resultsBySymbol.get(symbol);
+                    if( null == fieldValuesForThisSymbol )
                     {
                         // add it
-                        fieldValuesForThisRic = new ArrayList<>();
-                        resultsByRic.put(ric, fieldValuesForThisRic);
+                        fieldValuesForThisSymbol = new ArrayList<>();
+                        resultsBySymbol.put(symbol, fieldValuesForThisSymbol);
                     }
                     
                     // Get the values
@@ -564,7 +459,7 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                     valueForThisRicAndField.name = fieldName;
 
                     // Loop through each value
-                    JsonArray fieldValues = valuesForThisRic.getJsonArray(CPTADSWSConstants.VALUE_FIELD);
+                    JsonArray fieldValues = valuesForThisSymbol.getJsonArray(CPTADSWSConstants.VALUE_FIELD);
                     for( int k = 0; k < fieldValues.size(); k++ )
                     {
                         JsonValue currentValue = fieldValues.get(k);
@@ -581,9 +476,11 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
                             {
                                 valueForThisRicAndField.value = fieldValues.getString(k);                                
                             }
-                            // set a date                            
-                            valueForThisRicAndField.date = dates.get(k);
-                            fieldValuesForThisRic.add(valueForThisRicAndField);                            
+                            
+                            // Add date if exists
+                            addDateToFieldValueIfNeeded(valueForThisRicAndField, k);
+                            // add to list
+                            fieldValuesForThisSymbol.add(valueForThisRicAndField);                            
                         }
                     }                    
                 }
@@ -591,6 +488,63 @@ public class CPTADSWSMessage extends CPTARefinitivMessage
         }
     
         // return the final map
-        return resultsByRic;
+        return resultsBySymbol;
     }
+    
+    protected void addDateToFieldValueIfNeeded(CPTADataFieldValue valueForThisRicAndField, int k)
+    {
+        // Do nothing here
+        // The timeseries message will override this to add dates
+    }
+    
+    protected void addDSWSRowsToExistingResult
+                                             (
+                                             HashMap<String, List<CPTADataFieldValue>> resultsBySymbol, 
+                                             JsonArrayBuilder existingDataInCPTAFormat
+                                             )
+    {
+        // Default for this is that there are no dates
+        // So for each symbol
+        // Get the 
+        // for each ric, we add a row of data for each date
+        Set<String> ricsWithResults = resultsBySymbol.keySet();
+        for( String currentRic: ricsWithResults)
+        {
+            // For each date there is going to be a json object with all the
+            // data for that ric on that date
+            HashMap<String, JsonObjectBuilder> rowsForThisSymbol = new HashMap<>();
+            List<CPTADataFieldValue> valuesForThisRic = resultsBySymbol.get(currentRic);
+            for(CPTADataFieldValue currentValue : valuesForThisRic)
+            {
+                // Get the row for this date                
+                JsonObjectBuilder rowForThisDate = rowsForThisSymbol.get(currentValue.date);
+                // If this is the first date
+                if( null == rowForThisDate )
+                {
+                    // Create a row
+                    rowForThisDate = Json.createObjectBuilder();
+                    // For consistency with DSS
+                    // Need identifier in this format
+                    // "IdentifierType":"Ric","Identifier":"2618.TW"
+                    // Add the ric
+                    rowForThisDate.add(CPTAInstrumentConstants.ID_FIELD_NAME, currentRic);
+                    // Add that the identifier is a RIC
+                    rowForThisDate.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+                    // Add the date
+                    rowForThisDate.add(CPTAUtilityConstants.DATE_FIELD_NAME, currentValue.date);
+                    // Add to rows
+                    rowsForThisSymbol.put(currentValue.date, rowForThisDate);
+                }
+                // Add the field name and its value
+                rowForThisDate.add(currentValue.name, currentValue.value);
+            }
+            
+            // add the rows to the result
+            Collection<JsonObjectBuilder> rowsToAdd = rowsForThisSymbol.values();
+            for(JsonObjectBuilder currentRow : rowsToAdd)
+            {
+                existingDataInCPTAFormat.add(0, currentRow);
+            }
+        }        
+    }        
 }
