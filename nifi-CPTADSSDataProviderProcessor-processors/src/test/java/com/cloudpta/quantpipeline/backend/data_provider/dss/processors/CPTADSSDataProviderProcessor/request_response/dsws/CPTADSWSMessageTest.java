@@ -20,6 +20,7 @@ limitations under the License.
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
 import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
+import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentDatabaseConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataFieldValue;
 import com.cloudpta.quantpipeline.backend.data_provider.request_response.CPTADataProperty;
@@ -940,7 +941,7 @@ public class CPTADSWSMessageTest
         assertNotNull(row1);
         // Has identifier, indentifier type, date, field = value
         assertEquals(row1.size(),4);
-        assertEquals(row1.getString(CPTAInstrumentConstants.ID_FIELD_NAME),ric1);
+        assertEquals(row1.getString(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME),ric1);
         assertEquals(row1.getString(CPTAUtilityConstants.DATE_FIELD_NAME),date1);
         assertEquals(row1.getString(field1), Double.toString(ric1Field1Value));
         
