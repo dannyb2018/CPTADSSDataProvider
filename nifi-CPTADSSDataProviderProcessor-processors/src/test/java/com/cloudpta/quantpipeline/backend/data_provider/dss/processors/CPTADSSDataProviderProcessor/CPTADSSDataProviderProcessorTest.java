@@ -19,7 +19,7 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor;
 
-import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
+import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentDatabaseConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dss.CPTADSSConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.processor.CPTADataProviderAPIConstants;
 import java.io.ByteArrayInputStream;
@@ -76,8 +76,6 @@ public class CPTADSSDataProviderProcessorTest
         String resultValue = new String(runner.getContentAsByteArray(result));
 
         // Test attributes and content
-//        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
-        result.assertContentEquals("nifi rocks");       
     }
 
     @Test
@@ -91,11 +89,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
-        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
-        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -141,8 +139,6 @@ public class CPTADSSDataProviderProcessorTest
         String resultValue = new String(runner.getContentAsByteArray(result));
 
         // Test attributes and content
-//        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
-        result.assertContentEquals("nifi rocks");       
     }
 
     @Test
@@ -157,11 +153,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
-        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
-        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -201,13 +197,11 @@ public class CPTADSSDataProviderProcessorTest
 
         // If you need to read or do aditional tests on results you can access the content
         List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
-        assertTrue("1 match", results.size() == 1);
+        assertTrue( results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
 
         // Test attributes and content
-//        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
-        result.assertContentEquals("nifi rocks");       
     }
 
     @Test
@@ -223,11 +217,11 @@ public class CPTADSSDataProviderProcessorTest
         // Mock the input file
         // Build the instruments array
         JsonObjectBuilder instrument1 = Json.createObjectBuilder();
-        instrument1.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric1);
-        instrument1.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric1);
+        instrument1.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonObjectBuilder instrument2 = Json.createObjectBuilder();
-        instrument2.add(CPTAInstrumentConstants.ID_FIELD_NAME, ric2);
-        instrument2.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, ric2);
+        instrument2.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
         JsonArrayBuilder instruments = Json.createArrayBuilder();
         instruments.add(instrument1);
         instruments.add(instrument2);
@@ -269,7 +263,7 @@ public class CPTADSSDataProviderProcessorTest
 
         // If you need to read or do aditional tests on results you can access the content
         List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
-        assertTrue("1 match", results.size() == 1);
+        assertTrue( results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
 
@@ -306,7 +300,7 @@ public class CPTADSSDataProviderProcessorTest
 
         // If you need to read or do aditional tests on results you can access the content
         List<MockFlowFile> results = runner.getFlowFilesForRelationship(CPTADataProviderAPIConstants.RELATIONSHIP_NAME_SUCCESS);
-        assertTrue("1 match", results.size() == 1);
+        assertTrue(results.size() == 1);
         MockFlowFile result = results.get(0);
         String resultValue = new String(runner.getContentAsByteArray(result));
 
