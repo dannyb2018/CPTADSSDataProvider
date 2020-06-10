@@ -19,7 +19,7 @@ limitations under the License.
 */
 package com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.dsws;
 
-import com.cloudpta.quantpipeline.api.instrument.CPTAInstrumentConstants;
+import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentDatabaseConstants;
 import com.cloudpta.quantpipeline.api.instrument.symbology.CPTAInstrumentSymbology;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.CPTADSSDataProviderProcessorConstants;
 import com.cloudpta.quantpipeline.backend.data_provider.dss.processors.CPTADSSDataProviderProcessor.request_response.CPTARefinitivMessage;
@@ -58,7 +58,7 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
     {
         // For Datascope to use rics needs to be of the form <RIC> 
         // If it is a ric, need a <> around it
-        if( 0 == symbolToGet.getIDSource().compareTo(CPTAInstrumentConstants.ID_SOURCE_RIC))
+        if( 0 == symbolToGet.getIDSource().compareTo(CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC))
         {
             return "<" + symbolToGet.getID() + ">";
         }
@@ -527,9 +527,9 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
                     // Need identifier in this format
                     // "IdentifierType":"Ric","Identifier":"2618.TW"
                     // Add the ric
-                    rowForThisDate.add(CPTAInstrumentConstants.ID_FIELD_NAME, currentRic);
+                    rowForThisDate.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_FIELD_NAME, currentRic);
                     // Add that the identifier is a RIC
-                    rowForThisDate.add(CPTAInstrumentConstants.ID_SOURCE_FIELD_NAME, CPTAInstrumentConstants.ID_SOURCE_RIC);
+                    rowForThisDate.add(CPTAInstrumentDatabaseConstants.INSTRUMENT_ID_SOURCE_FIELD_NAME, CPTAInstrumentDatabaseConstants.ID_SOURCE_RIC);
                     // Add the date
                     rowForThisDate.add(CPTAUtilityConstants.DATE_FIELD_NAME, currentValue.date);
                     // Add to rows
