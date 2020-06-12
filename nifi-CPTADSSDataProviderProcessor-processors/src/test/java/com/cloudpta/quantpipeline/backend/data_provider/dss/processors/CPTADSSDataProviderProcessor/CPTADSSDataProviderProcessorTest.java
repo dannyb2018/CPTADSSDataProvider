@@ -52,7 +52,7 @@ public class CPTADSSDataProviderProcessorTest
         InputStream content = new ByteArrayInputStream(emptyRequestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
-        TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
+        TestRunner runner = TestRunners.newTestRunner(new GetRefinitivFinanceData());
 
         // Set user names, passwords
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY, DSS_USER_NAME);
@@ -115,7 +115,7 @@ public class CPTADSSDataProviderProcessorTest
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
-        TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
+        TestRunner runner = TestRunners.newTestRunner(new GetRefinitivFinanceData());
 
         // Set user names, passwords
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY, UUID.randomUUID().toString());
@@ -179,7 +179,7 @@ public class CPTADSSDataProviderProcessorTest
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
-        TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
+        TestRunner runner = TestRunners.newTestRunner(new GetRefinitivFinanceData());
 
         // Set user names, passwords
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY, DSS_USER_NAME);
@@ -243,7 +243,7 @@ public class CPTADSSDataProviderProcessorTest
         InputStream content = new ByteArrayInputStream(requestString.getBytes());
 
         // Generate a test runner to mock a processor in a flow
-        TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
+        TestRunner runner = TestRunners.newTestRunner(new GetRefinitivFinanceData());
 
         // Set user names, passwords
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY, DSS_USER_NAME);
@@ -268,7 +268,7 @@ public class CPTADSSDataProviderProcessorTest
         String resultValue = new String(runner.getContentAsByteArray(result));
 
         // Test attributes and content
-//        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
+//        result.assertAttributeEquals(GetRefinitivFinanceData.MATCH_ATTR, "nifi rocks");
         result.assertContentEquals("nifi rocks");       
     }
 
@@ -281,7 +281,7 @@ public class CPTADSSDataProviderProcessorTest
         InputStream content = new ByteArrayInputStream("{\"hello\":\"nifi rocks\"}".getBytes());
 
         // Generate a test runner to mock a processor in a flow
-        TestRunner runner = TestRunners.newTestRunner(new CPTADSSDataProviderProcessor());
+        TestRunner runner = TestRunners.newTestRunner(new GetRefinitivFinanceData());
 
         // Set user names, passwords
         runner.setProperty(CPTADSSDataProviderProcessorConstants.DSS_USER_NAME_PROPERTY, DSS_USER_NAME);
@@ -305,7 +305,7 @@ public class CPTADSSDataProviderProcessorTest
         String resultValue = new String(runner.getContentAsByteArray(result));
 
         // Test attributes and content
-//        result.assertAttributeEquals(CPTADSSDataProviderProcessor.MATCH_ATTR, "nifi rocks");
+//        result.assertAttributeEquals(GetRefinitivFinanceData.MATCH_ATTR, "nifi rocks");
         result.assertContentEquals("nifi rocks");       
     }    
 }
