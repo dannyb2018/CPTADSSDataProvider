@@ -70,21 +70,20 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
     }
     
     @Override
-    public JsonArray getResult
-                             (
-                             ComponentLog logger, 
-                             ProcessContext context, 
-                             List<CPTAInstrumentSymbology> symbols, 
-                             List<String> fields, 
-                             List<CPTADataProperty> properties
-                             ) throws CPTAException
+    public void getResult
+                        (
+                        ComponentLog logger, 
+                        ProcessContext context, 
+                        JsonArrayBuilder responses,
+                        List<CPTAInstrumentSymbology> symbols, 
+                        List<String> fields, 
+                        List<CPTADataProperty> properties
+                        ) throws CPTAException
     {
         String userName = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_USER_NAME_PROPERTY).getValue();
         String password = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_PASSWORD_PROPERTY).getValue();
         String baseURL = context.getProperty(CPTADSSDataProviderProcessorConstants.DSWS_BASE_URL_PROPERTY).getValue();
 
-        JsonArrayBuilder cptaDataResponse  = Json.createArrayBuilder();
-        
         // Can only do 50 symbols at a time
         // So need to keep count of how many we have done already
         int symbolsOffset = 0;
@@ -110,21 +109,16 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
             // We need to get an authorisation token first
             String authorisationToken = getToken(baseURL, userName, password);
             // Now request the data
-            JsonObject dswsDataResponse = getData
-                                                (
-                                                baseURL, 
-                                                authorisationToken, 
-                                                symbolList, 
-                                                fields, 
-                                                properties
-                                                );
-            // Add it to the response
-            mergeDSWSResponseWithCPTAFormat(dswsDataResponse, cptaDataResponse);
+            getData
+                  (
+                  baseURL, 
+                  authorisationToken, 
+                  responses,
+                  symbolList, 
+                  fields, 
+                  properties
+                  );
         }
-
-        // convert to a json object
-        JsonArray cptaResponseAsJson = cptaDataResponse.build().asJsonArray();
-        return cptaResponseAsJson;
     }
     
     protected String getToken(String baseURL, String userName, String password)
@@ -150,14 +144,15 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
         return token;
     }
     
-    protected JsonObject getData
-                               (
-                               String baseURL, 
-                               String authorisationToken, 
-                               String symbolList, 
-                               List<String> fields, 
-                               List<CPTADataProperty> properties
-                               ) throws CPTAException
+    protected void getData
+                         (
+                         String baseURL, 
+                         String authorisationToken, 
+                         JsonArrayBuilder responses,
+                         String symbolList, 
+                         List<String> fields, 
+                         List<CPTADataProperty> properties
+                         ) throws CPTAException
     {        
         // Get the data request string
         String dataRequestAsString = buildDataRequest
@@ -179,8 +174,9 @@ public abstract class CPTADSWSMessage extends CPTARefinitivMessage
         JsonReader JsonReader = Json.createReader(new StringReader(dataRequestResponseAsString));
         JsonObject dataRequestResponseAsJson = JsonReader.readObject();
         
-        // Hand the response back
-        return dataRequestResponseAsJson;
+        // Add it to the response
+        mergeDSWSResponseWithCPTAFormat(dataRequestResponseAsJson, responses);
+        
     }
     
     protected String buildTokenRequest(String userName, String password)
