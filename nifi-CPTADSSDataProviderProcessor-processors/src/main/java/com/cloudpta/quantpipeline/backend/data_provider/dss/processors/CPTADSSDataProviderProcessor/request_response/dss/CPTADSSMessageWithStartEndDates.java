@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.TimeZone;
 import javax.json.Json;
 import javax.json.JsonArray;
+import javax.json.JsonArrayBuilder;
 import javax.json.JsonObjectBuilder;
 import org.apache.nifi.logging.ComponentLog;
 import org.apache.nifi.processor.ProcessContext;
@@ -43,14 +44,15 @@ import org.apache.nifi.processor.ProcessContext;
 public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
 {
     @Override
-    public JsonArray getResult
-                             (
-                             ComponentLog logger, 
-                             ProcessContext context, 
-                             List<CPTAInstrumentSymbology> symbols, 
-                             List<String> fields, 
-                             List<CPTADataProperty> properties
-                             ) throws CPTAException
+    public void getResult
+                        (
+                        ComponentLog logger, 
+                        ProcessContext context, 
+                        JsonArrayBuilder responses,
+                        List<CPTAInstrumentSymbology> symbols, 
+                        List<String> fields, 
+                        List<CPTADataProperty> properties
+                        ) throws CPTAException
     {
         // Defaults are unadjusted prices
         // set the start and end dates
@@ -80,8 +82,9 @@ public abstract class CPTADSSMessageWithStartEndDates extends CPTADSSMessage
                 shouldGetAdjustedPrices = true;
             }
         }
-            
-        return super.getResult(logger, context, symbols, fields, properties);
+        
+        // rest of getting the result is done in the parent class
+        super.getResult(logger, context, responses, symbols, fields, properties);
     }        
 
     @Override
