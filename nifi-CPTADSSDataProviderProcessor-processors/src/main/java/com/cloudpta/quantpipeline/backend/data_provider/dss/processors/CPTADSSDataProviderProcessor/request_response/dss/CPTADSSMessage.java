@@ -50,14 +50,15 @@ import org.apache.nifi.processor.ProcessContext;
 public class CPTADSSMessage extends CPTARefinitivMessage
 {        
     @Override
-    public JsonArray getResult
-                             (
-                             ComponentLog logger,
-                             ProcessContext context, 
-                             List<CPTAInstrumentSymbology> symbols, 
-                             List<String> fields, 
-                             List<CPTADataProperty> properties
-                             ) throws CPTAException
+    public void getResult
+                        (
+                        ComponentLog logger,
+                        ProcessContext context,
+                        JsonArrayBuilder responses,
+                        List<CPTAInstrumentSymbology> symbols, 
+                        List<String> fields, 
+                        List<CPTADataProperty> properties
+                        ) throws CPTAException
     {
         msgLogger = logger;
         // Get username and password from context
@@ -70,8 +71,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         this.instrumentList = symbols;
         
         // Get the data
-        JsonArray result = getData(30000);
-        return result;
+        getData(30000, responses);
     }
                               
     /**
@@ -118,7 +118,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
     }
     
     // BUGBUGDB set the timeout
-    public JsonArray getData(long timeout) throws CPTAException
+    public void getData(long timeout, JsonArrayBuilder responses) throws CPTAException
     {
         msgLogger.trace("getting data");
         // Get session token first, if dont have it
@@ -128,7 +128,6 @@ public class CPTADSSMessage extends CPTARefinitivMessage
             getSessionToken();            
         }
         
-        JsonArray result = null;
         msgLogger.trace("About to make request for data");
         Client client = javax.ws.rs.client.ClientBuilder.newClient();            
         String url = urlHost + CPTADSSConstants.GET_DATA_URL;
@@ -153,7 +152,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         {
             msgLogger.trace("HTTP status: " + respStatusCode + " - A response is available now!" );
             msgLogger.trace("got data");
-            result = parseResponse(response);
+            parseResponse(response, responses);
 
         }
         else if( 202 == respStatusCode )
@@ -198,17 +197,14 @@ public class CPTADSSMessage extends CPTARefinitivMessage
             if (respStatusCode == 200) 
             {
                 msgLogger.trace("got data");
-                result = parseResponse(response);
+                parseResponse(response, responses);
             }                
         }
         else
         {
             msgLogger.trace("returned an error");
             handleError(response);
-        }
-        
-        msgLogger.trace("returning result " + result.toString());
-        return result;
+        }        
     }
     
     protected void handleError(Response response) throws CPTAException
@@ -319,7 +315,7 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         detailsSpecificToThisExtractionRequest.addNull("Condition");
     }
     
-    protected JsonArray parseResponse(Response response)
+    protected void parseResponse(Response response, JsonArrayBuilder responses)
     {
         JsonObject responseContent = null;
     	String jsonAsString = response.readEntity(String.class);
@@ -331,8 +327,10 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         // Extract the values from the content
         // So look for the field saying Contents
         JsonArray result = responseContent.getJsonArray("Contents");
+        JsonArrayBuilder resultAsBuilder = Json.createArrayBuilder(result);
         
-        return result;
+        // Need to add this to responses
+        responses.addAll(resultAsBuilder);
     }
 
     protected void sleep(long seconds) 
