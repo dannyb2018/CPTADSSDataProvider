@@ -250,10 +250,9 @@ public class CPTADSSMessage extends CPTARefinitivMessage
         }
         
         msgLogger.trace("building exception");
-        ArrayList<String> errors = new ArrayList<>();
-        errors.add(errorMessage);
+        Exception createdException = new Exception(errorMessage);
+        CPTAException exceptionForTheseErrors = new CPTAException(createdException);
         msgLogger.trace("throwing exception");
-        CPTAException exceptionForTheseErrors = new CPTAException(errors);
         throw exceptionForTheseErrors;
     }
     
